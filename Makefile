@@ -18,6 +18,11 @@ $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
 tcpServer: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 
+.PHONY: clean
+
+clean:
+	rm -r tcpServer $(TEST_ODIR) $(ODIR) $(TEST_OUTPUT_DIR)
+
 TEST_DIR=test
 TEST_ODIR=obj/test
 TEST_OUTPUT_DIR=bin
