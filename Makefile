@@ -39,11 +39,11 @@ test: $(TESTS)
 	echo "Executing all tests"
 
 $(TEST_ODIR)/%.o: $(TEST_DIR)/%.c $(DEPS)
-	mkdir $(TEST_ODIR)
+	mkdir -p $(TEST_ODIR)
 	$(CC) -c -o $@ $< $(C_FLAGS) $(TEST_FLAGS)
 
 $(TEST_OUTPUT_DIR)/hello_world_test: $(TEST_ODIR)/hello_world_test.o #$(ODIR)/hello_world.o
-	mkdir $(TEST_OUTPUT_DIR)
+	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(C_FLAGS) $(TEST_LIBS)
 
 .PHONY: hello_world_test
