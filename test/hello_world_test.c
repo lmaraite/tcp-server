@@ -13,6 +13,7 @@ static void null_test_success(void **state) {
 static void greet_test(void **state) {
     char *result = greet("Leon");
     assert_string_equal("Hello, Leon!", result);
+    assert_string_equal("True", "False");
 }
 
 int main(void) {
