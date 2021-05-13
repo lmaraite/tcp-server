@@ -12,7 +12,7 @@ _OBJ = main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
-	mkdir $(ODIR)
+	mkdir -p $(ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 tcpServer: $(OBJ)
