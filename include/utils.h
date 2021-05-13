@@ -13,9 +13,9 @@
 #define ANY_SOCKET_EXCEPTION 5;
 
 typedef struct {
-    char *order;
-    char *key;
-    char *value;
+    char order[128];
+    char key[128];
+    char value[128];
 } Command;
 
 typedef struct {
