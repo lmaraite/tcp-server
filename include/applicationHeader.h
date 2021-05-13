@@ -1,6 +1,15 @@
 #ifndef APPLICATIONHEADER_H_INCLUDED
 #define APPLICATIONHEADER_H_INCLUDED
 
+//public
+/*
+       Wenn Result.error_code = SUCCESS steht im Result.value der Wert den der 
+       Client auf der Konsole sehen soll.
+       Ansonsten wird nur der error_code im Result übermittelt und das value
+       bleibt LEER.
+*/
+
+//private
 //Entscheidet ob und welcher Befehl ausgeführt wird, gibt Result an ClientSession zurück. Mögliche Error: COMMAND_NOT_FOUND, MISSING_ARGUMENT, TO_MANY_ARGUMENTS
 struct Result executeCommand(struct Command command);
 
