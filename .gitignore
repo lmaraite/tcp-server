@@ -1,0 +1,9 @@
+modules/*
+
+# compilation output
+obj/*
+bin/*
+tcpServer
+
+# vim cache files
+*.swp
