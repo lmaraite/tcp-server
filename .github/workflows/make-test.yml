@@ -1,0 +1,16 @@
+name: make-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkou@v2
+      - name: test application
+        run: make test
