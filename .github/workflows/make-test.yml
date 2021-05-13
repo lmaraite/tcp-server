@@ -11,6 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
-        uses: actions/checkou@v2
+        uses: actions/checkout@v2
       - name: test application
         run: make test
