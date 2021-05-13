@@ -24,7 +24,7 @@ typedef struct {
 } Result;
 
 /*
-    Trennt UserInput an den Leerzeichen und speichert die ersten drei
+    Trennt commandAsString an den Leerzeichen und speichert die ersten drei
     resultierenden Strings in Command.order, Command.key und Command.value
 */
 Command parseStringToCommand(char *commandAsString);
