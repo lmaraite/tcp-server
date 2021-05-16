@@ -3,27 +3,26 @@
 
 //public
 /*
-       Wenn Result.error_code = SUCCESS steht im Result.value der Wert den der 
+       Wenn Result.error_code = SUCCESS steht im Result.value der Wert den der
        Client auf der Konsole sehen soll.
-       Ansonsten wird nur der error_code im Result übermittelt und das value
+       Ansonsten wird nur der error_code im Result Ã¼bermittelt und das value
        bleibt LEER.
 */
-
-//private
-//Entscheidet ob und welcher Befehl ausgeführt wird, gibt Result an ClientSession zurück. Mögliche Error: COMMAND_NOT_FOUND, MISSING_ARGUMENT, TO_MANY_ARGUMENTS
+//Entscheidet ob und welcher Befehl ausgefÃ¼hrt wird, gibt Result an ClientSession zurÃ¼ck. MÃ¶gliche Error: COMMAND_NOT_FOUND
 struct Result executeCommand(struct Command command);
+//private
 
-//Gibt Key und Value an Datenhaltung zur speicherung weiter, gibt Result an ClientSession zurück.
-struct Result Put(struct Command comm);
+//Gibt Key und Value an Datenhaltung Ã¼ber "save()" weiter und gibt result an "executeCommand()" zurÃ¼ck.
+struct Result put(char key, char value);
 
-//Fragt den Value zum gegebenen Key an, gibt Result an ClientSession zurück. Mögliche Error: KEY_NOT_FOUND
-struct Result get(struct Command command);
+//Fragt den Value zum gegebenen key per "get_by_key()" an und gibt result an "executeCommand()" zurÃ¼ck. MÃ¶gliche Error: KEY_NOT_FOUND
+struct Result get(char key);
 
-//Gibt Key zur Löschung an Datenhaltung weiter, gibt Result an ClientSession zurück. Mögliche Error: KEY_NOT_FOUND
-struct Result del(struct Command command);
+//Gibt Key zur LÃ¶schung an Datenhaltung per "delete()" weiter, gibt Result an "executeCommand()" zurÃ¼ck. MÃ¶gliche Error: KEY_NOT_FOUND
+struct Result del(char key);
 
-//Beendet die Verbindung des ScoektClient
-void quit(struct Command command);
+//Beendet die Verbindung des ScoektClient.
+void quit();
 
 
 
