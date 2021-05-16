@@ -18,7 +18,7 @@ int loadConfig(char path[]) {
     FILE *fp;
     fp = fopen(path, "r");
     if (fp == NULL) {
-        printf("Error while opening the config file.\n");
+        printf("An error occurred while opening the config file. The application will stick to its default config.\n");
         return 1001;
     }
     char keyContent[128] = "";
