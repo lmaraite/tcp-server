@@ -7,10 +7,11 @@
     int MAX_SESSIONS;
 } Configuration ;
 
-static Configuration config = {5678, "./data", 5};
+extern Configuration config;
 
 /*
-    Gibt SUCCESS oder eine Fehlermeldung über 1000 zurück
+    Gibt SUCCESS oder eine Fehlermeldung über 1000 zurück.
+    Lädt die Config aus der in path angegebenen Datei.
 */
 int loadConfig(char path[]);
 

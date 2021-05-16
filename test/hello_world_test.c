@@ -4,6 +4,8 @@
 #include <cmocka.h>
 
 #include "greeter.h"
+#include "../modules/cmocka/include/cmocka.h"
+#include "../include/greeter.h"
 
 /* A test case that does nothing and succeeds. */
 static void null_test_success(void **state) {
