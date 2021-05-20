@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "../include/server.h"
-#include "--/include/clientSession.h"
+#include "../include/clientSession.h"
 
 
 /*
