@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#include "server.h"
+#include "../include/server.h"
 
 
 /*
