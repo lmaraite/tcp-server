@@ -7,6 +7,7 @@
 
 #include "../include/server.h"
 #include "../include/clientSession.h"
+#include "../include/configuration.h"
 
 
 /*
@@ -15,8 +16,10 @@
 */
 int runServer(){
 
-  int socketPort   = 7777;                 // Port
-  int maxClients   = 5;                   // max. Client Sessions
+  loadConfig("./config");
+
+  int socketPort   = config.PORT;                 // Port
+  int maxClients   = config.MAX_SESSIONS;        // max. Client Sessions
 
   int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
