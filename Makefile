@@ -5,10 +5,10 @@ CFLAGS=-I$(IDIR)
 SRC_DIR=src
 ODIR=obj
 
-_DEPS=greeter.h
+_DEPS=greeter.h datenhaltung.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o greeter.o
+_OBJ = main.o greeter.o datenhaltung.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
