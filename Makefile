@@ -5,7 +5,7 @@ CFLAGS=-I$(IDIR)
 SRC_DIR=src
 ODIR=obj
 
-_DEPS=greeter.h applicationLayer.h
+_DEPS=greeter.h utils.h applicationLayer.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = main.o greeter.o
