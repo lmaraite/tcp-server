@@ -5,12 +5,14 @@
 #ifndef TCP_SERVER_UTILS_H
 #define TCP_SERVER_UTILS_H
 
-#define SUCCESS 0;
-#define COMMAND_NOT_FOUND 1;
-#define KEY_NOT_FOUND 2;
-#define MISSING_ARGUMENT 3;
-#define TO_MANY_ARGUMENTS 4;
-#define ANY_SOCKET_EXCEPTION 5;
+#define SUCCESS 0
+#define COMMAND_NOT_FOUND 1
+#define KEY_NOT_FOUND 2
+#define MISSING_ARGUMENT 3
+#define TO_MANY_ARGUMENTS 4
+#define ANY_SOCKET_EXCEPTION 5
+
+#define STRING_LENGTH 128
 
 typedef struct {
     char order[128];

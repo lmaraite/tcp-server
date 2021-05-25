@@ -4,23 +4,24 @@
 Command parseStringToCommand(char commandAsString[]) {
     char str[strlen(commandAsString)];
     strcpy(str, commandAsString);
+    char *rest = str;
     char *delimiter = " ";
     char *token;
     Command command = {"", "", ""};
-    token = strtok(str, delimiter);
+    token = strtok_r(str, delimiter, &rest);
     int i = 0;
     while (token) {
         if (i == 0) {
-            strcpy(command.order, token);
+            strncpy(command.order, token, STRING_LENGTH);
             i++;
         } else if (i == 1) {
-            strcpy(command.key, token);
+            strncpy(command.key, token, STRING_LENGTH);
             i++;
         } else {
-            strcpy(command.value, token);
+            strncpy(command.value, token, STRING_LENGTH);
             break;
         }
-        token = strtok(NULL, delimiter);
+        token = strtok_r(NULL, delimiter, &rest);
     }
     return command;
 }
