@@ -12,6 +12,8 @@ struct Result{
 
 struct Result result;
 
+char *storage = "storage/";
+
 //-----------------------------
 
 char *readString(FILE* fileDescriptor){
@@ -33,11 +35,23 @@ char *readString(FILE* fileDescriptor){
 	return returnString;
 }
 
+char *concatenate(char* string1, char* string2){
+    int stringLength = sizeof(string1) + sizeof(string2);
+    char *combinedString;
+    combinedString = malloc(stringLength);
+    strcat(combinedString, string1);
+    strcat(combinedString, string2);
+    return combinedString;
+}
+
 //-----------------------------
 
 struct Result find_by_key(char* key){
      FILE *keyFile;
-     keyFile = fopen(key,"r");
+     char *keyPath = concatenate(storage,key);
+     printf("%s\n", keyPath);
+     keyFile = fopen(keyPath,"r");
+     free(keyPath);
 
      if(keyFile == NULL){
           result.error_code = 1002;
@@ -51,12 +65,18 @@ struct Result find_by_key(char* key){
 
      result.value = value;
      result.error_code = 0;
+
+     free(value);
      return result;
 }
 
 int save(char* key, char* value){
      FILE *keyFile;
-     keyFile = fopen(key,"w");
+     char *keyPath = concatenate(storage,key);
+     printf("%s\n", keyPath);
+     keyFile = fopen(keyPath,"w");
+     free(keyPath);
+
      fprintf(keyFile, "%s", value);
      fclose(keyFile);
 
@@ -65,14 +85,17 @@ int save(char* key, char* value){
 
 int delete(char* key){
   FILE *keyFile;
-  keyFile = fopen(key,"r");
+  char *keyPath = concatenate(storage,key);
+  printf("%s\n", keyPath);
+  keyFile = fopen(keyPath,"r");
 
   if(keyFile == NULL){
        return 1002;
   }
   fclose(keyFile);
 
-  remove(key);
+  remove(keyPath);
+  free(keyPath);
   return 0;
 
 }
@@ -80,7 +103,7 @@ int delete(char* key){
 int main(int argc, char const *argv[]) {
      printf("\n");
 
-     result = find_by_key("testFile");
+     result = find_by_key("saveFile");
      printf("Value: %s\n",result.value);
      if(result.error_code==0){
        printf("SUCCESS\n");
@@ -89,7 +112,7 @@ int main(int argc, char const *argv[]) {
      }
      printf("\n");
 
-     int deleteError = delete("deleteFile");
+     int deleteError = delete("saveFile2");
      printf("deleteError: %i\n",deleteError);
      printf("\n");
 
