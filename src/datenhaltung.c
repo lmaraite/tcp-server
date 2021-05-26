@@ -58,7 +58,7 @@ int save(char* key, char* value){
      return 0;
 }
 
-int delete(char* key){
+int delete_by_key(char* key){
   FILE *keyFile;
   keyFile = fopen(key,"r");
 
