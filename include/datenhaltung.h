@@ -16,6 +16,6 @@ int save(char* key, char* value);
 /*
     Gibt SUCCESS oder eine Fehlermeldung über 1000 zurück
 */
-int delete(char* key);
+int delete_by_key(char* key);
 
 #endif
