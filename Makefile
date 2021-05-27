@@ -6,10 +6,10 @@ SRC_DIR=src
 ODIR=obj
 
 
-_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h
+_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h configuration.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o greeter.o utils.o
+_OBJ = main.o greeter.o utils.o configuration.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
