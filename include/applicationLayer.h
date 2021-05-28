@@ -1,6 +1,8 @@
 #ifndef APPLICATION_LAYER_H_INCLUDED
 #define APPLICATION_LAYER_H_INCLUDED
 
+#include "utils.h"
+
 /*
        Wenn Result.error_code = SUCCESS steht im Result.value der Wert den der
        Client auf der Konsole sehen soll.
@@ -8,6 +10,6 @@
        bleibt LEER.
 */
 //Entscheidet ob und welcher Befehl ausgeführt wird, gibt Result an ClientSession zurück. Mögliche Error: COMMAND_NOT_FOUND
-struct Result executeCommand(struct Command command);
+Result executeCommand(Command command);
 
 #endif // APPLICATION_LAYER_H_INCLUDED
