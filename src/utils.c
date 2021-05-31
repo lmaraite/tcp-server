@@ -1,9 +1,16 @@
 #include <string.h>
 #include "../include/utils.h"
 
+char *removeTrailingLineBreak(char *s) {
+    if(s[strlen(s) -1] == '\n') {
+        s[strlen(s) -1] = '\0';
+    }
+    return s;
+}
+
 Command parseStringToCommand(char commandAsString[]) {
     char str[strlen(commandAsString)];
-    strcpy(str, commandAsString);
+    strcpy(str, removeTrailingLineBreak(commandAsString));
     char *rest = str;
     char *delimiter = " ";
     char *token;
