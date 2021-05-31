@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../include/configuration.h"
+#include "../include/utils.h"
 /*
     Gibt SUCCESS oder eine Fehlermeldung über 1000 zurück
 */
@@ -21,8 +22,8 @@ int loadConfig(char path[]) {
         printf("An error occurred while opening the config file. The application will stick to its default config.\n");
         return 1001;
     }
-    char keyContent[128] = "";
-    char valueContent[128] = "";
+    char keyContent[STRING_LENGTH] = "";
+    char valueContent[STRING_LENGTH] = "";
     enum Position position = key;
     while ((c = fgetc(fp)) != EOF) {
         if (c == '=') {

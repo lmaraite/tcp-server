@@ -1,9 +1,11 @@
 #ifndef TCP_SERVER_CONFIGURATION_H
 #define TCP_SERVER_CONFIGURATION_H
 
+#include <limits.h>
+
  typedef struct {
     int PORT;
-    char PATH[512];
+    char PATH[PATH_MAX];
     int MAX_SESSIONS;
 } Configuration ;
 

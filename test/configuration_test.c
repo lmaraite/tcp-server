@@ -1,11 +1,19 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <string.h>
 
 #include "../include/configuration.h"
 #include "../modules/cmocka/include/cmocka.h"
 
-static void configuration_basic_test(void **state) {
+static void resetConfig() {
+    strcpy(config.PATH, "./data");
+    config.PORT = 5678;
+    config.MAX_SESSIONS = 5;
+}
+
+void configuration_basic_test(void **state) {
+    resetConfig();
     loadConfig("./test/res/test-config");
     assert_int_equal(config.PORT, 1234);
     assert_string_equal(config.PATH, "./database");
@@ -13,6 +21,7 @@ static void configuration_basic_test(void **state) {
 }
 
 static void configuration_failed_reading_test(void **state) {
+    resetConfig();
     int error_code = loadConfig("./foo/not_existing_path.bar");
     assert_int_equal(error_code, 1001);
     assert_int_equal(config.PORT, 5678);
@@ -23,7 +32,7 @@ static void configuration_failed_reading_test(void **state) {
 int main(void) {
 	    const struct CMUnitTest tests[] = {
 		            cmocka_unit_test(configuration_basic_test),
-                    cmocka_unit_test(configuration_basic_test),
+                    cmocka_unit_test(configuration_failed_reading_test),
 			        };
 	        return cmocka_run_group_tests(tests, NULL, NULL);
 }
