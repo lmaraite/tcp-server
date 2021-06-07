@@ -11,5 +11,4 @@
 */
 //Entscheidet ob und welcher Befehl ausgeführt wird, gibt Result an ClientSession zurück. Mögliche Error: COMMAND_NOT_FOUND
 Result executeCommand(Command command);
-
 #endif // APPLICATION_LAYER_H_INCLUDED
