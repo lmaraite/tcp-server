@@ -14,7 +14,7 @@
      Startet einen Socket-Server auf Port 7777 und wartet auf eingehende TCP-Verbindungen.
      Anschließend wird für jede angenommene Verbindung ein Child-Process erstellt
 */
-int runServer(){
+void runServer(){
 
   loadConfig("./config");
 
@@ -40,13 +40,13 @@ int runServer(){
   listen(serverSocket, maxClients);
   while(1){
     clientSocket = accept(serverSocket,
-                          &clientAddress,
+                          (struct sockaddr *)&clientAddress,
                           &clientAddress_len);
     if (fork() == 0){
       char *connected = "Connected.\n";
       send(clientSocket, connected, strlen(connected), 0);
       handleClient(clientSocket);
-      exit;
+      break;
     }
   }
 
