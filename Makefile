@@ -6,10 +6,10 @@ SRC_DIR=src
 ODIR=obj
 
 
-_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h
+_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h configuration.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o greeter.o utils.o
+_OBJ = main.o greeter.o utils.o configuration.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
@@ -31,7 +31,7 @@ TEST_OUTPUT_DIR=bin
 TEST_FLAGS=-I./modules/cmocka/include
 TEST_LIBS=-L ./modules/cmocka/lib -lcmocka
 
-_TESTS=hello_world utils
+_TESTS=hello_world utils configuration
 TESTS=$(patsubst %,%_test,$(_TESTS))
 
 IDIR=./include
@@ -54,7 +54,11 @@ $(TEST_OUTPUT_DIR)/utils_test: $(TEST_ODIR)/utils_test.o $(ODIR)/utils.o
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
 
-.PHONY: hello_world_test utils_test
+$(TEST_OUTPUT_DIR)/configuration_test: $(TEST_ODIR)/configuration_test.o $(ODIR)/configuration.o
+	mkdir -p $(TEST_OUTPUT_DIR)
+	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
+
+.PHONY: hello_world_test utils_test configuration_test
 
 hello_world_test: $(TEST_OUTPUT_DIR)/hello_world_test
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
@@ -63,3 +67,7 @@ hello_world_test: $(TEST_OUTPUT_DIR)/hello_world_test
 utils_test: $(TEST_OUTPUT_DIR)/utils_test
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
 	./$(TEST_OUTPUT_DIR)/utils_test
+
+configuration_test: $(TEST_OUTPUT_DIR)/configuration_test
+	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
+	./$(TEST_OUTPUT_DIR)/configuration_test
