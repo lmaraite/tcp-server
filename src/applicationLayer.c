@@ -9,7 +9,7 @@ Result put(char* key, char* value ){
     Result result;
     if(save(key,value)==0){
         result.value = value;
-        result.error_code = save(key, value);
+        result.error_code = 0;
         return result;
     }
     else{
