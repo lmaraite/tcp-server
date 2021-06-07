@@ -40,41 +40,33 @@ CFLAGS=-I$(IDIR)
 .PHONY: test
 
 test: $(TESTS)
-	echo "Executing all tests"
+	@echo "Executing all tests"
 
 $(TEST_ODIR)/%.o: $(TEST_DIR)/%.c $(DEPS)
 	mkdir -p $(TEST_ODIR)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_FLAGS)
 
-# hello world tests
 $(TEST_OUTPUT_DIR)/hello_world_test: $(TEST_ODIR)/hello_world_test.o $(ODIR)/greeter.o
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
 
-.PHONY: hello_world_test
+$(TEST_OUTPUT_DIR)/utils_test: $(TEST_ODIR)/utils_test.o $(ODIR)/utils.o
+	mkdir -p $(TEST_OUTPUT_DIR)
+	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
+
+$(TEST_OUTPUT_DIR)/clientSession_test: $(TEST_ODIR)/clientSession_test.o $(ODIR)/clientSession.o
+	mkdir -p $(TEST_OUTPUT_DIR)
+	$(CC) -o $@ $^ $(CFLAGS) -Wl,--wrap=recv,--wrap=close,--wrap=send,--wrap=parseStringToCommand,--wrap=executeCommand $(TEST_LIBS)
+
+.PHONY: hello_world_test utils_test clientSession_test
 
 hello_world_test: $(TEST_OUTPUT_DIR)/hello_world_test
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
 	./$(TEST_OUTPUT_DIR)/hello_world_test
 
-
-# utils test
-$(TEST_OUTPUT_DIR)/utils_test: $(TEST_ODIR)/utils_test.o $(ODIR)/utils.o
-	mkdir -p $(TEST_OUTPUT_DIR)
-	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
-
-.PHONY: utils_test
-
 utils_test: $(TEST_OUTPUT_DIR)/utils_test
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
 	./$(TEST_OUTPUT_DIR)/utils_test
-
-# clientSession tests
-$(TEST_OUTPUT_DIR)/clientSession_test: $(TEST_ODIR)/clientSession_test.o $(ODIR)/clientSession.o
-	mkdir -p $(TEST_OUTPUT_DIR)
-	$(CC) -o $@ $^ $(CFLAGS) -Wl,--wrap=recv,--wrap=close,--wrap=send,--wrap=parseStringToCommand,--wrap=executeCommand $(TEST_LIBS)
-
-.PHONY: clientSession_test
 
 clientSession_test: $(TEST_OUTPUT_DIR)/clientSession_test
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:./modules/cmocka/lib  \
