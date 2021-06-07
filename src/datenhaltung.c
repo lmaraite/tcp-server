@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "datenhaltung.h"
 #include "../include/utils.h"
 
 char *storage = "storage/";
