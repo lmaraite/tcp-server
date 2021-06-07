@@ -46,8 +46,11 @@ void runServer() {
         if (fork() == 0) {
             char *connected = "Connected.\n";
             send(clientSocket, connected, strlen(connected), 0);
-            handleClient(clientSocket);
+            int errorCode = handleClient(clientSocket);
+            printf("Closed socket with error code: %d\n", errorCode);
             break;
+        } else {
+            close(clientSocket);
         }
     }
 

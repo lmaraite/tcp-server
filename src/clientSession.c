@@ -5,6 +5,9 @@
 #include <string.h>
 #include <sys/socket.h>
 
+//TODO: remove
+#include <stdio.h>
+
 #include "utils.h"
 #include "applicationLayer.h"
 
@@ -50,6 +53,7 @@ int handleClient(const int socketfd) {
 int handleMessage(const int socketfd, char readBuffer[]) {
     Command command = parseStringToCommand(readBuffer);
     if(strcmp(command.order, "QUIT") == 0) {
+        printf("Closing client session %d\n", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
     }
     Result result = executeCommand(command);
