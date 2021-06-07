@@ -4,9 +4,6 @@
 
 #include "../include/utils.h"
 
-
-struct Result result;
-
 char *storage = "storage/";
 
 //-----------------------------
@@ -41,13 +38,13 @@ char *concatenate(char* string1, char* string2){
 
 //-----------------------------
 
-struct Result find_by_key(char* key){
+Result find_by_key(char* key){
      FILE *keyFile;
 	 char *keyPath = concatenate(storage,key);
 
 	 keyFile = fopen(keyPath,"r");
 	 free(keyPath);
-
+	 Result result;
      if(keyFile == NULL){
           result.error_code = 1002;
           return result;
