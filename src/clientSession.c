@@ -60,17 +60,18 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     Result result = executeCommand(command);
     int sendResult = -1;
     if( result.error_code != 0) {
-        char* dest_string = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
-        strcpy(dest_string, ERROR_PREFIX);
-        strcat(dest_string, result.value);
-        sendResult = send(socketfd, dest_string, strlen(dest_string) +1, 0);
-        free(dest_string);
+        char* answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
+        strcpy(answerToClient, ERROR_PREFIX);
+        strcat(answerToClient, result.value);
+        sendResult = send(socketfd, answerToClient, strlen(answerToClient) +1, 0);
+        free(answerToClient);
     } else {
         char *answereToClient = malloc(sizeof(result.value) + 3);
         sprintf(answereToClient, "%s\n", result.value);
         sendResult = send(socketfd, answereToClient, strlen(answereToClient) +1, 0);
         free(answereToClient);
     }
+    free(result.value);
     if(sendResult < 0) {
         return ANY_SOCKET_EXCEPTION;
     }
