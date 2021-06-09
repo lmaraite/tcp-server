@@ -9,3 +9,4 @@ tcpServer
 *.swp
 
 config
+storage/
