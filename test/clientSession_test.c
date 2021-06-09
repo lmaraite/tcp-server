@@ -99,8 +99,8 @@ static void testHandleClientShouldForwardCommandToApplicationLayer(void **state)
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "yes");
-    expect_value(__wrap_send, len, 4);
+    expect_string(__wrap_send, buf, "yes\n");
+    expect_value(__wrap_send, len, 5);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, 4);
 
@@ -164,7 +164,7 @@ static void testHandleClientShouldSendMESSAGE_TOO_LONGWhenMessageIsTooLong(void 
     will_return(__wrap_recv, STRING_LENGTH * 4 +1);
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "ERROR: message too long");
+    expect_string(__wrap_send, buf, "ERROR: message too long\n");
     expect_value(__wrap_send, len, 24);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, 24);
@@ -217,8 +217,8 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenSendReturnedErro
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "yes");
-    expect_value(__wrap_send, len, 4);
+    expect_string(__wrap_send, buf, "yes\n");
+    expect_value(__wrap_send, len, 5);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, -1);
     // when
