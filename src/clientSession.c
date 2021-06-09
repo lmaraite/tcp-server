@@ -30,9 +30,8 @@ int handleClient(const int socketfd) {
     while(1) {
         int numBytesRead = recv(socketfd, readBuffer, MAX_BUFFER_SIZE +1, 0);
         if(isBiggerThanBuffer(numBytesRead)) {
-            char dest_string[24];
-            strcpy(dest_string, ERROR_PREFIX);
-            strcat(dest_string, "message too long");
+            char dest_string[25];
+            sprintf(dest_string, "%s%s\n", ERROR_PREFIX, "message too long");
             send(socketfd, dest_string, 24, 0);
         } else if(numBytesRead < 0) {
             return ANY_SOCKET_EXCEPTION;
@@ -59,21 +58,18 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     }
     Result result = executeCommand(command);
     int sendResult = -1;
+    char* answerToClient = NULL;
     if( result.error_code != 0) {
-        char* answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
-        strcpy(answerToClient, ERROR_PREFIX);
-        strcat(answerToClient, result.value);
-        sendResult = send(socketfd, answerToClient, strlen(answerToClient) +1, 0);
-        free(answerToClient);
+        answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
+        sprintf(answerToClient, "%s%s\n", ERROR_PREFIX, result.value);
     } else {
-        char *answerToClient = malloc(sizeof(result.value) + 3);
+        answerToClient = malloc(sizeof(result.value) + 3);
         sprintf(answerToClient, "%s\n", result.value);
-        sendResult = send(socketfd, answerToClient, strlen(answerToClient) +1, 0);
-        free(answerToClient);
     }
-    free(result.value);
-    if(sendResult < 0) {
+    if(send(socketfd, answerToClient, strlen(answerToClient) +1, 0) < 0) {
         return ANY_SOCKET_EXCEPTION;
     }
+    free(answerToClient);
+    free(result.value);
     return 0;
 }

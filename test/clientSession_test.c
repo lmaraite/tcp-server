@@ -138,10 +138,10 @@ static void testHandleClientShouldSendErrorValue(void **state) {
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "ERROR: fatal error");
-    expect_value(__wrap_send, len, 19);
+    expect_string(__wrap_send, buf, "ERROR: fatal error\n");
+    expect_value(__wrap_send, len, 20);
     expect_value(__wrap_send, flags, 0);
-    will_return(__wrap_send, 19);
+    will_return(__wrap_send, 20);
 
     initQuitMock(expectedFileDescriptor);
     // when
