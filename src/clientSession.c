@@ -66,10 +66,10 @@ int handleMessage(const int socketfd, char readBuffer[]) {
         sendResult = send(socketfd, answerToClient, strlen(answerToClient) +1, 0);
         free(answerToClient);
     } else {
-        char *answereToClient = malloc(sizeof(result.value) + 3);
-        sprintf(answereToClient, "%s\n", result.value);
-        sendResult = send(socketfd, answereToClient, strlen(answereToClient) +1, 0);
-        free(answereToClient);
+        char *answerToClient = malloc(sizeof(result.value) + 3);
+        sprintf(answerToClient, "%s\n", result.value);
+        sendResult = send(socketfd, answerToClient, strlen(answerToClient) +1, 0);
+        free(answerToClient);
     }
     free(result.value);
     if(sendResult < 0) {
