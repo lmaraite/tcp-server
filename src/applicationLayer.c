@@ -7,13 +7,14 @@
 
 Result put(char* key, char* value ){
     Result result;
-    if(save(key,value)==0){
+    int status = save(key,value);
+    if(status == 0){
         result.value = value;
-        result.error_code = 0;
+        result.error_code = status;
         return result;
     }
     else{
-        result.error_code = save(key, value);
+        result.error_code = status;
         return result;
     }
 }
@@ -26,14 +27,39 @@ Result del(char* key){
 
 Result executeCommand( Command command){
     Result result;
-    if(strcmp(command.order, "put")==0){
-        return put(command.key, command.value);
+    char *formatedValue;
+    if(strcmp(command.order, "PUT")==0){
+        result = put(command.key, command.value);
+        formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
+        sprintf(formatedValue, "%s:%s:%s", "PUT", command.key, command.value);
+        result.value = formatedValue;
+        return result;
     }
-    if(strcmp(command.order, "get")==0){
-        return find_by_key(command.key);
+    if(strcmp(command.order, "GET")==0){
+        result = find_by_key(command.key);
+        if (result.error_code == 1002) {
+            formatedValue = malloc(sizeof(command.key) + sizeof("key_nonexistent") + (sizeof(char) * 6));
+            sprintf(formatedValue, "%s:%s:%s", "GET", command.key, "key_nonexistent");
+        }
+        else {
+            formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
+            sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
+        }
+        result.value = formatedValue;
+        return result;
     }
-    if(strcmp(command.order, "del")==0){
-        return del(command.key);
+    if(strcmp(command.order, "DEL")==0){
+        result =  del(command.key);
+        if (result.error_code == 1002) {
+            formatedValue = malloc(sizeof(command.key) + sizeof("key_nonexistent") + (sizeof(char) * 6));
+            sprintf(formatedValue, "%s:%s:%s", "DEL", command.key, "key_nonexistent");
+        }
+        else {
+            formatedValue = malloc(sizeof(command.key) + sizeof("key_deleted") + (sizeof(char) * 5));
+            sprintf(formatedValue, "%s:%s:%s", "DEL", command.key, "key_deleted");
+        }
+        result.value = formatedValue;
+        return result;
     }
     else{
         result.error_code = 1;

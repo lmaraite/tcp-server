@@ -37,6 +37,7 @@ int handleClient(const int socketfd) {
         } else if(numBytesRead < 0) {
             return ANY_SOCKET_EXCEPTION;
         } else if(isNotEmpty(numBytesRead)) {
+            readBuffer[numBytesRead] = '\0';
             int handleMessageReturn = handleMessage(socketfd, readBuffer);
             if(handleMessageReturn == ANY_SOCKET_EXCEPTION) {
                 return ANY_SOCKET_EXCEPTION;
@@ -58,14 +59,17 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     }
     Result result = executeCommand(command);
     int sendResult = -1;
-    if(result.error_code != 0) {
+    if( result.error_code != 0) {
         char* dest_string = (char *) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
         strcpy(dest_string, ERROR_PREFIX);
         strcat(dest_string, result.value);
         sendResult = send(socketfd, dest_string, strlen(dest_string) +1, 0);
         free(dest_string);
     } else {
-        sendResult = send(socketfd, result.value, strlen(result.value) +1, 0);
+        char *answereToClient = malloc(sizeof(result.value) + 3);
+        sprintf(answereToClient, "%s\n", result.value);
+        sendResult = send(socketfd, answereToClient, strlen(answereToClient) +1, 0);
+        free(answereToClient);
     }
     if(sendResult < 0) {
         return ANY_SOCKET_EXCEPTION;

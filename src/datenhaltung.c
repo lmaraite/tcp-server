@@ -59,7 +59,6 @@ Result find_by_key(char* key){
      result.value = value;
      result.error_code = 0;
 
-	 free(value);
      return result;
 }
 
