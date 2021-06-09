@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 #include "utils.h"
 #include "applicationLayer.h"
@@ -80,6 +81,8 @@ static void testHandleClientShouldForwardCommandToApplicationLayer(void **state)
         .key="hello",
         .value="world"
     };
+    char *expectedValue = malloc(5);
+    strcpy(expectedValue, "yes");
     
     expect_value(__wrap_recv, fildes, expectedFileDescriptor);
     expect_value(__wrap_recv, nbyte, STRING_LENGTH*3 +1);
@@ -91,7 +94,7 @@ static void testHandleClientShouldForwardCommandToApplicationLayer(void **state)
 
     expect_memory(__wrap_executeCommand, &command, &expectedCommand, sizeof(Command));
     will_return(__wrap_executeCommand, &((Result) {
-        .value="yes",
+        .value=expectedValue,
         .error_code=0
     }));
 
@@ -117,6 +120,8 @@ static void testHandleClientShouldSendErrorValue(void **state) {
         .key="hello",
         .value="world"
     };
+    char* expectedValue = malloc(12);
+    strcpy(expectedValue, "fatal error");
     
     expect_value(__wrap_recv, fildes, expectedFileDescriptor);
     expect_value(__wrap_recv, nbyte, STRING_LENGTH*3 +1);
@@ -128,7 +133,7 @@ static void testHandleClientShouldSendErrorValue(void **state) {
 
     expect_memory(__wrap_executeCommand, &command, &expectedCommand, sizeof(Command));
     will_return(__wrap_executeCommand, &((Result) {
-        .value="fatal error",
+        .value=expectedValue,
         .error_code=42
     }));
 
@@ -194,6 +199,8 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenSendReturnedErro
         .key="hello",
         .value="world"
     };
+    char* expectedValue = malloc(4);
+    strcpy(expectedValue, "yes");
     
     expect_value(__wrap_recv, fildes, expectedFileDescriptor);
     expect_value(__wrap_recv, nbyte, STRING_LENGTH*3 +1);
@@ -205,7 +212,7 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenSendReturnedErro
 
     expect_memory(__wrap_executeCommand, &command, &expectedCommand, sizeof(Command));
     will_return(__wrap_executeCommand, &((Result) {
-        .value="yes",
+        .value=expectedValue,
         .error_code=0
     }));
 
