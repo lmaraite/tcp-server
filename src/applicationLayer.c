@@ -63,6 +63,7 @@ Result executeCommand( Command command){
     }
     else{
         result.error_code = 1;
+        result.value = "Command not found\n";
         return result;
     }
 }
