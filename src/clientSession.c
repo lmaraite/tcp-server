@@ -53,6 +53,10 @@ int handleClient(const int socketfd) {
 int handleMessage(const int socketfd, char readBuffer[]) {
     Command command = parseStringToCommand(readBuffer);
     if(strcmp(command.order, "QUIT") == 0) {
+
+        command = parseStringToCommand("END");
+        executeCommand(command);
+
         printf("Closing client session %d\n", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
     }
@@ -63,13 +67,15 @@ int handleMessage(const int socketfd, char readBuffer[]) {
         answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
         sprintf(answerToClient, "%s%s\n", ERROR_PREFIX, result.value);
     } else {
-        answerToClient = malloc(sizeof(result.value) + 3);
+        answerToClient = malloc(strlen(result.value) + 3);
         sprintf(answerToClient, "%s\n", result.value);
     }
     if(send(socketfd, answerToClient, strlen(answerToClient) +1, 0) < 0) {
         return ANY_SOCKET_EXCEPTION;
     }
     free(answerToClient);
-    free(result.value);
+    if (result.malloced==0) {
+        free(result.value);
+    }
     return 0;
 }
