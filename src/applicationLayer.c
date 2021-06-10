@@ -153,7 +153,7 @@ Result executeCommand( Command command){
     }
     else{
       result.error_code = 1;
-      result.value = "Command not found\n";
+      result.value = "Command not found";
       result.malloced=1;
       return result;
     }
