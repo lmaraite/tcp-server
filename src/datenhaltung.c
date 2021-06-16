@@ -47,6 +47,7 @@ Result find_by_key(char* key){
 	 free(keyPath);
 	 Result result;
      if(keyFile == NULL){
+          result.value = NULL;
           result.error_code = 1002;
           return result;
      }

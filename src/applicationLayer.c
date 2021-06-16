@@ -45,6 +45,7 @@ Result executeCommand( Command command){
             formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
             sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
         }
+        free(result.value);
         result.value = formatedValue;
         return result;
     }
