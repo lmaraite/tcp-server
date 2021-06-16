@@ -29,7 +29,7 @@ char *readString(FILE* fileDescriptor){
 }
 
 char *concatenate(char* string1, char* string2){
-    int stringLength = sizeof(string1) + sizeof(string2);
+    int stringLength = strlen(string1) + strlen(string2) +1;
     char *combinedString;
     combinedString = malloc(stringLength);
     strcat(combinedString, string1);
