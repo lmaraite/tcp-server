@@ -4,10 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-
-//TODO: remove
 #include <stdio.h>
-
 #include "utils.h"
 #include "applicationLayer.h"
 
@@ -30,8 +27,8 @@ int handleClient(const int socketfd) {
     while(1) {
         int numBytesRead = recv(socketfd, readBuffer, MAX_BUFFER_SIZE +1, 0);
         if(isBiggerThanBuffer(numBytesRead)) {
-            char dest_string[25];
-            sprintf(dest_string, "%s%s\n", ERROR_PREFIX, "message too long");
+            char dest_string[27];
+            sprintf(dest_string, "> %s%s\n", ERROR_PREFIX, "message too long");
             send(socketfd, dest_string, 24, 0);
         } else if(numBytesRead < 0) {
             return ANY_SOCKET_EXCEPTION;
@@ -60,11 +57,11 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     int sendResult = -1;
     char* answerToClient = NULL;
     if( result.error_code != 0) {
-        answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 2);
-        sprintf(answerToClient, "%s%s\n", ERROR_PREFIX, result.value);
+        answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 4);
+        sprintf(answerToClient, "> %s%s\n", ERROR_PREFIX, result.value);
     } else {
-        answerToClient = malloc(strlen(result.value) + 2);
-        sprintf(answerToClient, "%s\n", result.value);
+        answerToClient = malloc(strlen(result.value) + 4);
+        sprintf(answerToClient, "> %s\n", result.value);
     }
     if(send(socketfd, answerToClient, strlen(answerToClient) +1, 0) < 0) {
         return ANY_SOCKET_EXCEPTION;
