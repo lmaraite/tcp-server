@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 #include <sys/ipc.h>
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
@@ -73,6 +74,17 @@ Result executeCommand(Command command) {
 }
 
 void notifyAll(char *key, char *message) {
+    struct sembuf up, down;
+    down.sem_num = 0;
+    down.sem_op = -1;
+    down.sem_flg = SEM_UNDO;
+
+    up.sem_num = 0;
+    up.sem_op = 1;
+    up.sem_flg = SEM_UNDO;
+
+    int semId = semget(SUBSCRIPTION_SEM_KEY, 1, IPC_CREAT | 0644);
+    semop(semId, &down, 1); // Enter critical are
     int shmId = shmget(SUBSCRIPTION_SHM_KEY, BUFSIZ, IPC_CREAT | 0644);
     char *subscriptions = shmat(shmId, 0, 0);
     int id = msgget(MSG_QUEUE_KEY, IPC_CREAT | 0644);
@@ -108,4 +120,5 @@ void notifyAll(char *key, char *message) {
         }
         i++;
     }
+    semop(semId, &up, 1); // Leave critical area
 }

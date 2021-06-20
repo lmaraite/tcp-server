@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <sys/shm.h>
+#include <sys/sem.h>
 #include <sys/ipc.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -43,10 +44,17 @@ void runServer() {
     listen(serverSocket, maxClients);
     printf("INFO: server running on port: %d\n", socketPort);
 
-    //Init subscription list
+    //Init subscription list no critical area because at this point this is the only process
     int shmId = shmget(SUBSCRIPTION_SHM_KEY, BUFSIZ, IPC_CREAT | 0644);
     char *subscriptions = shmat(shmId, 0, 0);
     strncpy(subscriptions, "", 1);
+
+    //Init semaphore for subscriptions
+    int semId = semget(SUBSCRIPTION_SEM_KEY, 1, IPC_CREAT | 0644);
+    unsigned short signals[1];
+    signals[0] = 1;
+    semctl(semId, 0, SETALL, signals);
+
 
     while (1) {
         clientSocket = accept(serverSocket,

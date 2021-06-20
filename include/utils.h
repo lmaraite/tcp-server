@@ -17,6 +17,7 @@
 #define STRING_LENGTH 128
 #define MSG_QUEUE_KEY 13
 #define SUBSCRIPTION_SHM_KEY 1313
+#define SUBSCRIPTION_SEM_KEY 1105
 
 struct message {
     long type;

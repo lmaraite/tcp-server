@@ -1,6 +1,6 @@
 CC=gcc
 IDIR=./include
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -lpthread
 
 SRC_DIR=src
 ODIR=obj
@@ -35,7 +35,7 @@ _TESTS=hello_world utils configuration clientSession
 TESTS=$(patsubst %,%_test,$(_TESTS))
 
 IDIR=./include
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -lpthread
 
 .PHONY: test
 

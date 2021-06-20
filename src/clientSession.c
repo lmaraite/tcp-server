@@ -63,6 +63,16 @@ int handleClient(const int socketfd) {
 }
 
 int handleMessage(const int socketfd, char readBuffer[]) {
+    struct sembuf up, down;
+    down.sem_num = 0;
+    down.sem_op = -1;
+    down.sem_flg = SEM_UNDO;
+
+    up.sem_num = 0;
+    up.sem_op = 1;
+    up.sem_flg = SEM_UNDO;
+
+
     Command command = parseStringToCommand(readBuffer);
     Result result = {.value = NULL};
     if(strcmp(command.order, "QUIT") == 0) {
@@ -71,10 +81,13 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     }
     char* answerToClient = NULL;
     if (strcmp(command.order, "SUB") == 0) {
+        int semId = semget(SUBSCRIPTION_SEM_KEY, 1, IPC_CREAT | 0644);
+        semop(semId, &down, 1); // Enter critical are
         sprintf(subscriptions, "%s%s$%d#", subscriptions, command.key, receiverPid);
         answerToClient = (char *) malloc(strlen(command.key) + 8);
         sprintf(answerToClient, "> SUB:%s\n", command.key);
-        printf("%s\n", subscriptions);
+        printf("DEBUG: %s\n", subscriptions);
+        semop(semId, &up, 1); // Enter critical are
         goto send;
     }
 
