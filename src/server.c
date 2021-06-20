@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
 #include <netinet/in.h>
 #include <string.h>
 
+#include "../include/utils.h"
 #include "../include/server.h"
 #include "../include/clientSession.h"
 #include "../include/configuration.h"
@@ -38,16 +41,23 @@ void runServer() {
     int clientAddress_len = sizeof(clientAddress);
 
     listen(serverSocket, maxClients);
-    printf("Server running on port: %d\n", socketPort);
+    printf("INFO: server running on port: %d\n", socketPort);
+
+    //Init subscription list
+    int shmId = shmget(SUBSCRIPTION_SHM_KEY, BUFSIZ, IPC_CREAT | 0644);
+    char *subscriptions = shmat(shmId, 0, 0);
+    strncpy(subscriptions, "", 1);
+
     while (1) {
         clientSocket = accept(serverSocket,
                               (struct sockaddr *) &clientAddress,
                               &clientAddress_len);
         if (fork() == 0) {
-            char *connected = "Connected.\n";
+            char *connected = "\nWelcome to the key value storage.\n";
+            printf("INFO: client connected\n");
             send(clientSocket, connected, strlen(connected), 0);
             int errorCode = handleClient(clientSocket);
-            printf("Closed socket with error code: %d\n", errorCode);
+            printf("INFO: closed socket with error code: %d\n", errorCode);
             break;
         } else {
             close(clientSocket);
