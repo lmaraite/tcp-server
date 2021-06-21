@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <fcntl.h>
 
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
