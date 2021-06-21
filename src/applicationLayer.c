@@ -134,7 +134,10 @@ Result executeCommand( Command command){
         formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
         sprintf(formatedValue, "%s:%s:%s", "PUT", command.key, command.value);
         result.value = formatedValue;
-    } else if(strcmp(command.order, "GET")==0){
+        result.malloced=0;
+        return result;
+    }
+    if(strcmp(command.order, "GET")==0){
         result = find_by_key(command.key);
         if (result.error_code == 1002) {
             formatedValue = malloc(sizeof(command.key) + sizeof("key_nonexistent") + (sizeof(char) * 6));
@@ -144,9 +147,11 @@ Result executeCommand( Command command){
             formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
             sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
         }
-        free(result.value);
         result.value = formatedValue;
-    } else if(strcmp(command.order, "DEL")==0){
+        result.malloced=0;
+        return result;
+    }
+    if(strcmp(command.order, "DEL")==0){
         result =  del(command.key);
         if (result.error_code == 1002) {
             formatedValue = malloc(sizeof(command.key) + sizeof("key_nonexistent") + (sizeof(char) * 6));
@@ -157,10 +162,13 @@ Result executeCommand( Command command){
             sprintf(formatedValue, "%s:%s:%s", "DEL", command.key, "key_deleted");
         }
         result.value = formatedValue;
-    } else{
-        result.error_code = 1;
-        result.value = calloc(sizeof(char), 18);
-        strcpy(result.value, "Command not found");
+        result.malloced=0;
+        return result;
     }
-    return result;
+    else{
+      result.error_code = 1;
+      result.value = "Command not found";
+      result.malloced=1;
+      return result;
+    }
 }
