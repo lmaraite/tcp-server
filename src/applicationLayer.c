@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <semaphore.h>
+
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
 #include "../include/applicationLayer.h"
@@ -27,34 +29,46 @@ Result del(char* key){
 }
 
 int beg(){
-  FILE *exclusiveFile;
+    sem_t *exclusiveSem;
+    exclusiveSem = sem_open("tcpServer-exclusiveSem", O_CREAT, 0644, 1);
+    sem_wait(exclusiveSem);
 
-  exclusiveFile = fopen(".exclusive","r");
+    FILE *exclusiveFile;
 
-  if(exclusiveFile != NULL){
-      fclose(exclusiveFile);
-      return 1002;
-  }
+    exclusiveFile = fopen(".exclusive","r");
 
-  exclusiveFile = fopen(".exclusive","w");
+    if(exclusiveFile != NULL){
+        fclose(exclusiveFile);
+        sem_post(exclusiveSem);
+        return 1002;
+    }
 
-  fprintf(exclusiveFile, "%d", getpid());
-  fclose(exclusiveFile);
+    exclusiveFile = fopen(".exclusive","w");
 
-  return 0;
+    fprintf(exclusiveFile, "%d", getpid());
+    fclose(exclusiveFile);
+    sem_post(exclusiveSem);
+
+    return 0;
 }
 
 int end (){
-  FILE *exclusiveFile;
-  exclusiveFile = fopen(".exclusive","r");
+    sem_t *exclusiveSem;
+    exclusiveSem = sem_open("tcpServer-exclusiveSem", O_CREAT, 0644, 1);
+    sem_wait(exclusiveSem);
 
-  if(exclusiveFile == NULL){
-       return 1002;
-  }
-  fclose(exclusiveFile);
+    FILE *exclusiveFile;
+    exclusiveFile = fopen(".exclusive","r");
 
-  remove(".exclusive");
-  return 0;
+    if(exclusiveFile == NULL){
+        sem_post(exclusiveSem);
+        return 1002;
+    }
+    fclose(exclusiveFile);
+
+    remove(".exclusive");
+    sem_post(exclusiveSem);
+    return 0;
 }
 
 int checkExclusive(){
