@@ -97,7 +97,7 @@ Result executeCommand( Command command){
     int hasPermission = checkExclusive();
     if (hasPermission==1) {
         result.error_code = 1;
-        result.value="Another user has exclusive write permissions";
+        result.value="Another user has exclusive permissions";
         result.malloced=1;
         return result;
     }
