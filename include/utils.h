@@ -23,7 +23,6 @@ typedef struct {
 typedef struct {
     char *value;
     int error_code;
-    int malloced;
 } Result;
 
 /*

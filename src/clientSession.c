@@ -74,8 +74,6 @@ int handleMessage(const int socketfd, char readBuffer[]) {
         return ANY_SOCKET_EXCEPTION;
     }
     free(answerToClient);
-    if (result.malloced==0) {
-        free(result.value);
-    }
+    free(result.value);
     return 0;
 }

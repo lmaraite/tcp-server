@@ -98,35 +98,37 @@ Result executeCommand( Command command){
     int hasPermission = checkExclusive();
     if (hasPermission==1) {
         result.error_code = 1;
-        result.value="Another user has exclusive permissions";
-        result.malloced=1;
+        result.value = calloc(sizeof(char), 34);
+        strcpy(result.value, "Another user has exclusive access");
         return result;
     }
 
     if(strcmp(command.order, "BEG")==0){
       int exclusiveStatus = beg();
       if(exclusiveStatus==0){
-          result.value = "You now have exclusive permissions";
+          result.value = calloc(sizeof(char), 30);
+          strcpy(result.value, "You now have exclusive access");
       }
       else if(exclusiveStatus==1002){
-          result.value= "You already have exclusive permissions";
+          result.value = calloc(sizeof(char), 34);
+          strcpy(result.value, "You already have exclusive access");
       }
       result.error_code = 0;
-      result.malloced=1;
       return result;
     }
 
     if(strcmp(command.order, "END")==0){
       int exclusiveStatus = end();
       if(exclusiveStatus==0){
-        result.value = "You gave up your exclusive permissions";
+        result.value = calloc(sizeof(char), 34);
+        strcpy(result.value, "You gave up your exclusive access");
         result.error_code = 0;
       }
       else if(exclusiveStatus==1002){
-          result.value="Nobody has exclusive permissions";
+          result.value = calloc(sizeof(char), 28);
+          strcpy(result.value, "Nobody has exclusive access");
       }
       result.error_code = 0;
-      result.malloced=1;
       return result;
     }
 
