@@ -122,3 +122,4 @@ void notifyAll(char *key, char *message) {
     }
     semop(semId, &up, 1); // Leave critical area
 }
+
