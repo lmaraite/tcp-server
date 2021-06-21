@@ -64,10 +64,10 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     int sendResult = -1;
     char* answerToClient = NULL;
     if( result.error_code != 0) {
-        answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 1);
+        answerToClient = (char*) malloc(strlen(ERROR_PREFIX) + strlen(result.value) + 2);
         sprintf(answerToClient, "%s%s\n", ERROR_PREFIX, result.value);
     } else {
-        answerToClient = malloc(strlen(result.value) + 3);
+        answerToClient = malloc(strlen(result.value) + 2);
         sprintf(answerToClient, "%s\n", result.value);
     }
     if(send(socketfd, answerToClient, strlen(answerToClient) +1, 0) < 0) {

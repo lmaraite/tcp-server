@@ -29,7 +29,7 @@ char *readString(FILE* fileDescriptor){
 }
 
 char *concatenate(char* string1, char* string2){
-    int stringLength = sizeof(string1) + sizeof(string2);
+    int stringLength = strlen(string1) + strlen(string2) +1;
     char *combinedString;
     combinedString = malloc(stringLength);
     strcat(combinedString, string1);
@@ -47,6 +47,7 @@ Result find_by_key(char* key){
 	 free(keyPath);
 	 Result result;
      if(keyFile == NULL){
+          result.value = NULL;
           result.error_code = 1002;
           return result;
      }
