@@ -4,8 +4,8 @@
 
 #include "datenhaltung.h"
 #include "../include/utils.h"
+#include "configuration.h"
 
-char *storage = "storage/";
 
 //-----------------------------
 
@@ -41,7 +41,7 @@ char *concatenate(char* string1, char* string2){
 
 Result find_by_key(char* key){
      FILE *keyFile;
-	 char *keyPath = concatenate(storage,key);
+     char *keyPath = concatenate(config.PATH, key);
 
 	 keyFile = fopen(keyPath,"r");
 	 free(keyPath);
@@ -65,7 +65,7 @@ Result find_by_key(char* key){
 
 int save(char* key, char* value){
      FILE *keyFile;
-     char *keyPath = concatenate(storage,key);
+     char *keyPath = concatenate(config.PATH, key);
      keyFile = fopen(keyPath,"w");
      free(keyPath);
 
@@ -77,7 +77,7 @@ int save(char* key, char* value){
 
 int delete_by_key(char* key){
   FILE *keyFile;
-  char *keyPath = concatenate(storage,key);
+  char *keyPath = concatenate(config.PATH,key);
   keyFile = fopen(keyPath,"r");
 
   if(keyFile == NULL){
