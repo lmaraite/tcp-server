@@ -45,9 +45,22 @@ int beg(){
     exclusiveFile = fopen(".exclusive","r");
 
     if(exclusiveFile != NULL){
+        int returnValue;
+        int pid = getpid();
+        int exclusiveID;
+
+        fscanf(exclusiveFile,"%i",&exclusiveID);
+
+        if (exclusiveID == pid){
+            returnValue = 1003;
+        }
+        else {
+            returnValue = 1002;
+        }
+
         fclose(exclusiveFile);
         sem_post(exclusiveSem);
-        return 1002;
+        return returnValue;
     }
 
     exclusiveFile = fopen(".exclusive","w");
@@ -118,6 +131,12 @@ Result executeCommand( Command command){
       else if(exclusiveStatus==1002){
           result.value = calloc(sizeof(char), 34);
           strcpy(result.value, "You already have exclusive access");
+      }
+      else if(exclusiveStatus==1003){
+          result.error_code = 1;
+          result.value = calloc(sizeof(char), 34);
+          strcpy(result.value, "Another user has exclusive access");
+          return result;
       }
       result.error_code = 0;
       return result;
@@ -226,4 +245,3 @@ void notifyAll(char *key, char *message) {
     }
     semop(semId, &up, 1); // Leave critical area
 }
-
