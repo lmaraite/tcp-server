@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "greeter.h"
+#include "server.h"
 
 int main() {
-	printf("%s\n", greet("world"));
+	runServer();
 	return 0;
 }
 

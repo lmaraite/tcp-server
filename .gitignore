@@ -7,3 +7,6 @@ tcpServer
 
 # vim cache files
 *.swp
+
+config
+storage/
