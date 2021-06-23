@@ -35,6 +35,7 @@ _TESTS=hello_world utils configuration clientSession
 TESTS=$(patsubst %,%_test,$(_TESTS))
 
 IDIR=./include
+CFLAGS=-I$(IDIR) -lpthread
 
 .PHONY: test
 
