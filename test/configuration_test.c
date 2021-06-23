@@ -16,7 +16,15 @@ void configuration_basic_test(void **state) {
     resetConfig();
     loadConfig("./test/res/test-config");
     assert_int_equal(config.PORT, 1234);
-    assert_string_equal(config.PATH, "./database");
+    assert_string_equal(config.PATH, "./database/");
+    assert_int_equal(config.MAX_SESSIONS, 10);
+}
+
+void configuration_append_slash_to_path_test(void **state) {
+    resetConfig();
+    loadConfig("./test/res/config-no-slash");
+    assert_int_equal(config.PORT, 1234);
+    assert_string_equal(config.PATH, "./database/");
     assert_int_equal(config.MAX_SESSIONS, 10);
 }
 
@@ -32,6 +40,7 @@ static void configuration_failed_reading_test(void **state) {
 int main(void) {
 	    const struct CMUnitTest tests[] = {
 		            cmocka_unit_test(configuration_basic_test),
+                    cmocka_unit_test(configuration_append_slash_to_path_test),
                     cmocka_unit_test(configuration_failed_reading_test),
 			        };
 	        return cmocka_run_group_tests(tests, NULL, NULL);
