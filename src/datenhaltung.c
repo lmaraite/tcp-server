@@ -1,15 +1,21 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <semaphore.h>
 #include <fcntl.h>
 
 #include "datenhaltung.h"
 #include "../include/utils.h"
+#include "configuration.h"
 
-char *storage = "storage/";
 char *semPrefix = "tcpServer-keySem-";
+int databaseCreated = 0;
+
 
 //-----------------------------
 
@@ -41,6 +47,16 @@ char *concatenate(char* string1, char* string2){
     return combinedString;
 }
 
+int createDatabase() {
+    pid_t pid = fork();
+    if(pid == 0) {
+        return execl("/usr/bin/mkdir", "mkdir", "-p", config.PATH, NULL);
+    } else {
+        waitpid(pid, 0, 0);
+        return 0;
+    }
+}
+
 //-----------------------------
 
 Result find_by_key(char* key){
@@ -50,7 +66,7 @@ Result find_by_key(char* key){
 	sem_wait(fileSem);
 
 	FILE *keyFile;
-	char *keyPath = concatenate(storage,key);
+	char *keyPath = concatenate(config.PATH,key);
 
 	keyFile = fopen(keyPath,"r");
 	free(keyPath);
@@ -77,26 +93,33 @@ Result find_by_key(char* key){
 }
 
 int save(char* key, char* value){
+     if(!databaseCreated) {
+         int c_return = createDatabase();
+         if(c_return != 0) {
+             return c_return + 1000;
+         }
+         databaseCreated = 1;
+     }
+  
+	  sem_t *fileSem;
+	  char *fileSemName = concatenate(semPrefix,key);
+	  fileSem = sem_open(fileSemName, O_CREAT, 0644, 1);
 
-	sem_t *fileSem;
-	char *fileSemName = concatenate(semPrefix,key);
-	fileSem = sem_open(fileSemName, O_CREAT, 0644, 1);
+	  FILE *keyFile;
+	  char *keyPath = concatenate(config.PATH,key);
 
-	FILE *keyFile;
-	char *keyPath = concatenate(storage,key);
+	  sem_wait(fileSem);
 
-	sem_wait(fileSem);
+	  keyFile = fopen(keyPath,"w");
+	  free(keyPath);
 
-	keyFile = fopen(keyPath,"w");
-	free(keyPath);
+    fprintf(keyFile, "%s", value);
+    fclose(keyFile);
 
-	fprintf(keyFile, "%s", value);
-	fclose(keyFile);
+    sem_post(fileSem);
+    free(fileSemName);
 
-	sem_post(fileSem);
-	free(fileSemName);
-
-	return 0;
+    return 0;
 }
 
 int delete_by_key(char* key){
@@ -107,7 +130,7 @@ int delete_by_key(char* key){
 	sem_wait(fileSem);
 
 	FILE *keyFile;
-	char *keyPath = concatenate(storage,key);
+	char *keyPath = concatenate(config.PATH,key);
 	keyFile = fopen(keyPath,"r");
 
 	if(keyFile == NULL){
