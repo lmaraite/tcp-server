@@ -53,9 +53,7 @@ int handleClient(const int socketfd) {
 int handleMessage(const int socketfd, char readBuffer[]) {
     Command command = parseStringToCommand(readBuffer);
     if(strcmp(command.order, "QUIT") == 0) {
-
-        command = parseStringToCommand("END");
-        executeCommand(command);
+        executeCommand((Command) {.order="END"});
 
         printf("Closing client session %d\n", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
