@@ -10,19 +10,14 @@ enum LOGGING_LEVEL {
     TRACE = 5
 } LOGGING_LEVEL;
 
-int error(const char *msg);
-int error(const char *format, ...);
+void error(const char *msg, ...);
 
-int warn(const char *msg);
-int warn(const char *format, ...);
+void warn(const char *format, ...);
 
-int info(const char *msg);
-int info(const char *format, ...);
+void info(const char *format, ...);
 
-int debug(const char *msg);
-int debug(const char *format, ...);
+void debug(const char *format, ...);
 
-int trace(const char *msg);
-int trace(const char *format, ...);
+void trace(const char *format, ...);
 
 #endif
