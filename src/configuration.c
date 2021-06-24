@@ -11,10 +11,12 @@ enum Position {key, value};
 const char PORT_KEY[] = "PORT";
 const char PATH_KEY[] = "PATH";
 const char MAX_SESSIONS_KEY[] = "MAX_SESSIONS";
+const char LOGGING_LEVEL_KEY[] = "LOGGING_LEVEL";
 
 Configuration config = {5678, "./data", 5};
 
 int setPath(char path[]);
+LoggingLevel parseLoggingLevel(char levelStr[]);
 
 int loadConfig(char configPath[]) {
     char c;
@@ -41,6 +43,13 @@ int loadConfig(char configPath[]) {
             }
             if (strcmp(keyContent, MAX_SESSIONS_KEY) == 0) {
                 config.MAX_SESSIONS = atoi(valueContent);
+            }
+            if (strcmp(keyContent, LOGGING_LEVEL_KEY) == 0) {
+                LoggingLevel loggingLevel;
+                if((loggingLevel = parseLoggingLevel(valueContent)) < 0) {
+                    return 1003;
+                }
+                config.LOGGING_LEVEL = loggingLevel;
             }
             strcpy(keyContent, "");
             strcpy(valueContent, "");
@@ -69,4 +78,26 @@ int setPath(char path[]) {
         config.PATH[pathLen +1] = '\0';
     }
     return 0;
+}
+
+LoggingLevel parseLoggingLevel(char loggingLevelStr[]) {
+    if(strcmp("off", loggingLevelStr) == 0) {
+        return OFF;
+    }
+    if(strcmp("error", loggingLevelStr) == 0) {
+        return ERROR;
+    }
+    if(strcmp("warn", loggingLevelStr) == 0) {
+        return WARN;
+    }
+    if(strcmp("info", loggingLevelStr) == 0) {
+        return INFO;
+    }
+    if(strcmp("debug", loggingLevelStr) == 0) {
+        return DEBUG;
+    }
+    if(strcmp("trace", loggingLevelStr) == 0) {
+        return TRACE;
+    }
+    return -1;
 }

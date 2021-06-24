@@ -1,14 +1,14 @@
 #ifndef LOGGER
 #define LOGGER
 
-enum LOGGING_LEVEL {
+typedef enum LoggingLevel {
     OFF = 0,
     ERROR = 1,
     WARN = 2,
     INFO = 3,
     DEBUG = 4,
     TRACE = 5
-} LOGGING_LEVEL;
+} LoggingLevel;
 
 void error(const char *msg, ...);
 
