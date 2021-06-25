@@ -1,14 +1,15 @@
 #ifndef LOGGER
 #define LOGGER
 
-typedef enum LoggingLevel {
-    OFF = 0,
-    ERROR = 1,
-    WARN = 2,
-    INFO = 3,
-    DEBUG = 4,
-    TRACE = 5
-} LoggingLevel;
+#define STDIO_SEM_KEY "stdio_sem"
+
+typedef short LoggingLevel;
+#define OFF 0
+#define ERROR 1
+#define WARN  2
+#define INFO 3
+#define DEBUG 4
+#define TRACE 5
 
 void error(const char *msg, ...);
 

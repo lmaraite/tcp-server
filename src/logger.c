@@ -6,6 +6,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "configuration.h"
+
 void logformat(const char* level, const char* format, va_list arg) {
     char cur_time_str[21];
     struct tm cur_tm;
@@ -25,6 +27,9 @@ void logformat(const char* level, const char* format, va_list arg) {
 }
 
 void error(const char *format, ...) {
+    if(config.LOGGING_LEVEL - ERROR < 0) {
+        return;
+    }
     va_list arg;
     va_start(arg, format);
     logformat("ERROR", format, arg);
@@ -32,6 +37,9 @@ void error(const char *format, ...) {
 }
 
 void warn(const char *format, ...) {
+    if(config.LOGGING_LEVEL - WARN < 0) {
+        return;
+    }
     va_list arg;
     va_start(arg, format);
     logformat(" WARN", format, arg);
@@ -39,6 +47,9 @@ void warn(const char *format, ...) {
 }
 
 void info(const char *format, ...) {
+    if(config.LOGGING_LEVEL - INFO < 0) {
+        return;
+    }
     va_list arg;
     va_start(arg, format);
     logformat(" INFO", format, arg);
@@ -46,6 +57,9 @@ void info(const char *format, ...) {
 }
 
 void debug(const char *format, ...) {
+    if(config.LOGGING_LEVEL - DEBUG < 0) {
+        return;
+    }
     va_list arg;
     va_start(arg, format);
     logformat("DEBUG", format, arg);
@@ -53,6 +67,9 @@ void debug(const char *format, ...) {
 }
 
 void trace(const char *format, ...) {
+    if(config.LOGGING_LEVEL - TRACE < 0) {
+        return;
+    }
     va_list arg;
     va_start(arg, format);
     logformat("ERROR", format, arg);
