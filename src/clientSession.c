@@ -78,7 +78,7 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     if(strcmp(command.order, "QUIT") == 0) {
         executeCommand((Command) {.order="END"});
 
-        printf("INFO: closing client session %d\n", socketfd);
+        debug("closing client session %d", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
     }
     char* answerToClient = NULL;
@@ -88,7 +88,7 @@ int handleMessage(const int socketfd, char readBuffer[]) {
         sprintf(subscriptions, "%s%s$%d#", subscriptions, command.key, receiverPid);
         answerToClient = (char *) malloc(strlen(command.key) + 8);
         sprintf(answerToClient, "> SUB:%s\n", command.key);
-        printf("DEBUG: %s\n", subscriptions);
+        debug(subscriptions);
         semop(semId, &up, 1); // Enter critical are
         goto send;
     }

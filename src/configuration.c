@@ -21,9 +21,10 @@ LoggingLevel parseLoggingLevel(char levelStr[]);
 int loadConfig(char configPath[]) {
     char c;
     FILE *fp;
+    info("read config at path %s", configPath);
     fp = fopen(configPath, "r");
     if (fp == NULL) {
-        printf("An error occurred while opening the config file. The application will stick to its default config.\n");
+        error("An error occurred while opening the config file. The application will stick to its default config.\n");
         return 1001;
     }
     char keyContent[STRING_LENGTH] = "";
@@ -64,6 +65,10 @@ int loadConfig(char configPath[]) {
         }
     }
     fclose(fp);
+    info("config.PORT set to %d", config.PORT);
+    info("config.PATH_KEY set to %s", config.PATH);
+    info("config.MAX_SESSIONS set to %d", config.MAX_SESSIONS);
+    info("config.LOGGING_LEVEL set to %d", config.LOGGING_LEVEL);
     return 0;
 }
 
