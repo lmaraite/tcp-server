@@ -148,3 +148,29 @@ int delete_by_key(char* key){
 
 	return 0;
 }
+
+int op_and_save(char *systemCall, char *key) {
+    char *sysCalls[] = {"date", "who", "uptime"};
+    int sysCallsLength = 3;
+    int fd[2];
+    pipe(fd);
+
+    if (fork() == 0) {
+        dup2(fd[1], 1);
+        close(fd[0]);
+
+        for (int i = 0; i < sysCallsLength; i++) {
+            if (strcmp(systemCall, sysCalls[i]) == 0) {
+                execlp(systemCall, systemCall, 0);
+            }
+        }
+        execlp("echo", "echo", "command not found", 0);
+    } else {
+        wait(0);
+        dup2(fd[0], 0);
+        save(key, readString(stdin));
+        close(fd[0]);
+        close(fd[1]);
+    }
+    return 0;
+}

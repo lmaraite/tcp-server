@@ -31,6 +31,12 @@ Result del(char *key) {
     return result;
 }
 
+Result op(char *systemCall, char *key) {
+    Result result;
+    result.error_code = op_and_save(systemCall, key);
+    return result;
+}
+
 Result executeCommand(Command command) {
     Result result;
     char *formatedValue;
@@ -60,7 +66,13 @@ Result executeCommand(Command command) {
             sprintf(formatedValue, "%s:%s:%s", "DEL", command.key, "key_deleted");
         }
         result.value = formatedValue;
-    } else {
+    } else if (strcmp(command.order, "OP") == 0) {
+        result = op(command.key, command.value);
+        formatedValue = malloc(sizeof(char) * 15);
+        sprintf(formatedValue, "%s", "exec successful");
+        result.value = formatedValue;
+    }
+    else {
         result.error_code = 1;
         result.value = calloc(sizeof(char), 18);
         strcpy(result.value, "Command not found");

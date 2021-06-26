@@ -19,4 +19,6 @@ int save(char* key, char* value);
 
 int delete_by_key(char* key);
 
+int op_and_save(char * systemCall, char *key);
+
 #endif
