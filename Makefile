@@ -34,9 +34,6 @@ TEST_LIBS=-L ./modules/cmocka/lib -lcmocka
 _TESTS=hello_world utils configuration clientSession
 TESTS=$(patsubst %,%_test,$(_TESTS))
 
-IDIR=./include
-CFLAGS=-I$(IDIR) -lpthread
-
 .PHONY: test
 
 test: $(TESTS)

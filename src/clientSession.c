@@ -76,6 +76,8 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     Command command = parseStringToCommand(readBuffer);
     Result result = {.value = NULL};
     if(strcmp(command.order, "QUIT") == 0) {
+        executeCommand((Command) {.order="END"});
+
         printf("INFO: closing client session %d\n", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
     }
