@@ -170,8 +170,8 @@ Result executeCommand( Command command){
         } else {
             formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
             sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
+            free(result.value);
         }
-        free(result.value);
         result.value = formatedValue;
     } else if (strcmp(command.order, "DEL") == 0) {
         result = del(command.key);
