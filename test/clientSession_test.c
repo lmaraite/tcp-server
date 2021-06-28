@@ -47,8 +47,11 @@ Result __wrap_executeCommand(Command command) {
 
 static void initQuitMock(int expectedFileDescriptor) {
     char expectedCommandAsString[] = "QUIT";
-    Command expectedCommand;
-    strcpy(expectedCommand.order, expectedCommandAsString);
+    Command expectedCommand = {
+        .order = "QUIT",
+        .key="",
+        .value=""
+    };
     
     expect_value(__wrap_recv, fildes, expectedFileDescriptor);
     expect_value(__wrap_recv, nbyte, STRING_LENGTH*3 +1);
@@ -57,6 +60,11 @@ static void initQuitMock(int expectedFileDescriptor) {
 
     expect_string(__wrap_parseStringToCommand, commandAsString, expectedCommandAsString);
     will_return(__wrap_parseStringToCommand, &expectedCommand);
+
+    Result any_result = {.error_code=0};
+    expect_any(__wrap_executeCommand, &command);
+    will_return(__wrap_executeCommand, &any_result);
+
 
     expect_value(__wrap_close, fd, expectedFileDescriptor);
     will_return(__wrap_close, 0);
@@ -99,8 +107,8 @@ static void testHandleClientShouldForwardCommandToApplicationLayer(void **state)
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "yes\n");
-    expect_value(__wrap_send, len, 5);
+    expect_string(__wrap_send, buf, "> yes\n");
+    expect_value(__wrap_send, len, 7);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, 4);
 
@@ -138,8 +146,8 @@ static void testHandleClientShouldSendErrorValue(void **state) {
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "ERROR: fatal error\n");
-    expect_value(__wrap_send, len, 20);
+    expect_string(__wrap_send, buf, "> ERROR: fatal error\n");
+    expect_value(__wrap_send, len, 22);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, 20);
 
@@ -164,7 +172,7 @@ static void testHandleClientShouldSendMESSAGE_TOO_LONGWhenMessageIsTooLong(void 
     will_return(__wrap_recv, STRING_LENGTH * 4 +1);
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "ERROR: message too long\n");
+    expect_string(__wrap_send, buf, "> ERROR: message too long\n");
     expect_value(__wrap_send, len, 24);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, 24);
@@ -217,8 +225,8 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenSendReturnedErro
     }));
 
     expect_value(__wrap_send, sockfd, expectedFileDescriptor);
-    expect_string(__wrap_send, buf, "yes\n");
-    expect_value(__wrap_send, len, 5);
+    expect_string(__wrap_send, buf, "> yes\n");
+    expect_value(__wrap_send, len, 7);
     expect_value(__wrap_send, flags, 0);
     will_return(__wrap_send, -1);
     // when
@@ -240,7 +248,10 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenCloseReturnedErr
     will_return(__wrap_recv, 5);
 
     expect_string(__wrap_parseStringToCommand, commandAsString, expectedCommandAsString);
-    will_return(__wrap_parseStringToCommand, &expectedCommand);
+    will_return_count(__wrap_parseStringToCommand, &expectedCommand, 1);
+
+    expect_any(__wrap_executeCommand, &command);
+    will_return(__wrap_executeCommand, &(Result) {});
 
     expect_value(__wrap_close, fd, expectedFileDescriptor);
     will_return(__wrap_close, -1);

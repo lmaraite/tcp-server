@@ -10,3 +10,4 @@ tcpServer
 
 config
 storage/
+.exclusive

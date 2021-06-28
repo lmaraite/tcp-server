@@ -5,6 +5,8 @@
 #ifndef TCP_SERVER_UTILS_H
 #define TCP_SERVER_UTILS_H
 
+#include <stdio.h>
+
 #define SUCCESS 0
 #define COMMAND_NOT_FOUND 1
 #define KEY_NOT_FOUND 2
@@ -13,6 +15,14 @@
 #define ANY_SOCKET_EXCEPTION 5
 
 #define STRING_LENGTH 128
+#define MSG_QUEUE_KEY 13
+#define SUBSCRIPTION_SHM_KEY 1313
+#define SUBSCRIPTION_SEM_KEY 1105
+
+struct message {
+    long type;
+    char text[BUFSIZ];
+};
 
 typedef struct {
     char order[128];

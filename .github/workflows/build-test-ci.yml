@@ -7,13 +7,18 @@ on:
     branches: [main, dev]
 
 jobs:
-  test_and_build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
       - name: build
         run: make tcpServer
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
       - name: setup
         run: ./setup.sh
       - name: test
