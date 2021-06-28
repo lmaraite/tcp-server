@@ -1,0 +1,20 @@
+name: build-test-ci
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: build
+        run: make tcpServer
+      - name: setup
+        run: ./setup.sh
+      - name: test
+        run: make test
