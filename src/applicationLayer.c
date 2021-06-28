@@ -171,8 +171,8 @@ Result executeCommand( Command command){
         } else {
             formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
             sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
+            free(result.value);
         }
-        free(result.value);
         result.value = formatedValue;
     } else if (strcmp(command.order, "DEL") == 0) {
         result = del(command.key);
@@ -192,7 +192,9 @@ Result executeCommand( Command command){
     if (result.error_code == 0) {
         char *message = (char *) malloc(strlen(result.value) + strlen(command.key) + 4);
         sprintf(message, "> %s\n", result.value);
-        notifyAll(command.key, message);
+        if (strcmp(command.order, "GET") != 0) {
+            notifyAll(command.key, message);
+        }
     }
     return result;
 }
