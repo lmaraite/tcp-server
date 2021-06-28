@@ -28,7 +28,6 @@ Command parseStringToCommand(char commandAsString[]) {
             strncpy(command.key, token, STRING_LENGTH);
             i++;
         } else {
-            strncpy(command.value, token, STRING_LENGTH);
             break;
         }
         token = strtok_r(NULL, delimiter, &rest);
