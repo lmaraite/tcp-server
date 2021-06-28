@@ -10,6 +10,8 @@
 #include <sys/sem.h>
 #include <stdio.h>
 #include <signal.h>
+
+#include "logger.h"
 #include "../include/utils.h"
 #include "../include/applicationLayer.h"
 
@@ -43,8 +45,10 @@ int handleClient(const int socketfd) {
         if(isBiggerThanBuffer(numBytesRead)) {
             char dest_string[27];
             sprintf(dest_string, "> %s%s\n", ERROR_PREFIX, "message too long");
+            warn("received message to long");
             send(socketfd, dest_string, 24, 0);
         } else if(numBytesRead < 0) {
+            warn("recv had error code %d", numBytesRead);
             cleanUp();
             return ANY_SOCKET_EXCEPTION;
         } else if(isNotEmpty(numBytesRead)) {

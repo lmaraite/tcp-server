@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "../include/configuration.h"
 #include "../include/utils.h"
+
 /*
     Gibt SUCCESS oder eine Fehlermeldung über 1000 zurück
 */

@@ -4,6 +4,12 @@
 #include <../modules/cmocka/include/cmocka.h>
 #include <string.h>
 #include "../include/utils.h"
+#include "configuration.h"
+#include "logger.h"
+
+Configuration config = {
+    .LOGGING_LEVEL = OFF
+};
 
 static void parseStringToCommand_order_key_value_test(void **state) {
     Command command = parseStringToCommand("ORDER KEY VALUE");
