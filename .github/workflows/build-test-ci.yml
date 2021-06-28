@@ -1,10 +1,10 @@
-name: make-test
+name: build-test-ci
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
 jobs:
   test_and_build:
@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
+      - name: build
+        run: make tcpServer
       - name: setup
         run: ./setup.sh
       - name: test
         run: make test
-      - name: build
-        run: make tcpServer
