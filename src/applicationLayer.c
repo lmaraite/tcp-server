@@ -48,7 +48,7 @@ Result op(char *systemCall, char *key) {
     return result;
 }
 
-Result executeCommand(Command command) {
+
 
 int beg(){
     sem_t *exclusiveSem;
