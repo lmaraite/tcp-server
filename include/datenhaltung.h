@@ -19,4 +19,6 @@ int save(char* key, char* value);
 
 int delete_by_key(char* key);
 
+char *readString(FILE* fileDescriptor);
+
 #endif

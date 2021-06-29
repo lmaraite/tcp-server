@@ -8,6 +8,10 @@
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <sys/ipc.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
@@ -16,6 +20,7 @@
 
 void notifyAll(char *key, char *message);
 enum Position {keyPos, pidPos};
+int op_and_save(char *systemCall, char *key);
 
 Result put(char *key, char *value) {
     Result result;
@@ -35,6 +40,15 @@ Result del(char *key) {
     result.error_code = delete_by_key(key);
     return result;
 }
+
+
+Result op(char *systemCall, char *key) {
+    Result result;
+    result.error_code = op_and_save(systemCall, key);
+    return result;
+}
+
+
 
 int beg(){
     sem_t *exclusiveSem;
@@ -112,6 +126,7 @@ int checkExclusive(){
 }
 
 Result executeCommand( Command command){
+
     Result result;
     char *formatedValue;
 
@@ -184,7 +199,13 @@ Result executeCommand( Command command){
             sprintf(formatedValue, "%s:%s:%s", "DEL", command.key, "key_deleted");
         }
         result.value = formatedValue;
-    } else {
+    } else if (strcmp(command.order, "OP") == 0) {
+        result = op(command.key, command.value);
+        formatedValue = malloc(sizeof(char) * 15);
+        sprintf(formatedValue, "%s", "exec successful");
+        result.value = formatedValue;
+    }
+    else {
         result.error_code = 1;
         result.value = calloc(sizeof(char), 18);
         strcpy(result.value, "Command not found");
@@ -224,7 +245,7 @@ void notifyAll(char *key, char *message) {
     enum Position position = keyPos;
     while (subscriptions[i] != '\0') {
         char c = subscriptions[i];
-        debug("currentKey = %s | pid = %s | c = %c", currentKey, pid, c);
+
         if (c == '#') {
             if (strcmp(key, currentKey) == 0) {
                 msg.type = atoi(pid);
@@ -248,3 +269,32 @@ void notifyAll(char *key, char *message) {
     }
     semop(semId, &up, 1); // Leave critical area
 }
+
+
+int op_and_save(char *systemCall, char *key) {
+    char *sysCalls[] = {"date", "who", "uptime"};
+    int sysCallsLength = 3;
+    int fd[2];
+    pipe(fd);
+
+    if (fork() == 0) {
+        dup2(fd[1], 1);
+        close(fd[0]);
+
+        for (int i = 0; i < sysCallsLength; i++) {
+            if (strcmp(systemCall, sysCalls[i]) == 0) {
+                execlp(systemCall, systemCall, 0);
+            }
+        }
+        execlp("echo", "echo", "command not found", 0);
+        return 1;
+    } else {
+        wait(0);
+        dup2(fd[0], 0);
+        save(key, readString(stdin));
+        close(fd[0]);
+        close(fd[1]);
+    }
+    return 0;
+}
+
