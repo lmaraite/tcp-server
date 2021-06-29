@@ -12,6 +12,12 @@
 #include "utils.h"
 #include "applicationLayer.h"
 #include "clientSession.h"
+#include "configuration.h"
+#include "logger.h"
+
+Configuration config = {
+    .LOGGING_LEVEL=OFF
+};
 
 ssize_t __wrap_recv(int fildes, void *buf, size_t nbyte, int flags) {
     check_expected(fildes);

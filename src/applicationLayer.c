@@ -12,6 +12,7 @@
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
 #include "../include/applicationLayer.h"
+#include "logger.h"
 
 void notifyAll(char *key, char *message);
 enum Position {keyPos, pidPos};
@@ -121,7 +122,7 @@ Result executeCommand( Command command){
         strcpy(result.value, "Another user has exclusive access");
         return result;
     }
-
+    debug("executing command %s", command.order);
     if(strcmp(command.order, "BEG")==0){
       int exclusiveStatus = beg();
       if(exclusiveStatus==0){
@@ -223,7 +224,7 @@ void notifyAll(char *key, char *message) {
     enum Position position = keyPos;
     while (subscriptions[i] != '\0') {
         char c = subscriptions[i];
-        printf("DEBUG: currentKey = %s | pid = %s | c = %c\n", currentKey, pid, c);
+        debug("currentKey = %s | pid = %s | c = %c", currentKey, pid, c);
         if (c == '#') {
             if (strcmp(key, currentKey) == 0) {
                 msg.type = atoi(pid);

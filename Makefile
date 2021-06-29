@@ -5,10 +5,10 @@ CFLAGS=-I$(IDIR) -lpthread
 SRC_DIR=src
 ODIR=obj
 
-_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h configuration.h server.h
+_DEPS=greeter.h utils.h clientSession.h datenhaltung.h applicationLayer.h configuration.h server.h logger.h
 DEPS=$(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o greeter.o utils.o datenhaltung.o applicationLayer.o configuration.o clientSession.o server.o
+_OBJ = main.o greeter.o utils.o datenhaltung.o applicationLayer.o configuration.o clientSession.o server.o logger.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
@@ -47,15 +47,15 @@ $(TEST_OUTPUT_DIR)/hello_world_test: $(TEST_ODIR)/hello_world_test.o $(ODIR)/gre
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
 
-$(TEST_OUTPUT_DIR)/utils_test: $(TEST_ODIR)/utils_test.o $(ODIR)/utils.o
+$(TEST_OUTPUT_DIR)/utils_test: $(TEST_ODIR)/utils_test.o $(ODIR)/utils.o $(ODIR)/logger.o
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
 
-$(TEST_OUTPUT_DIR)/configuration_test: $(TEST_ODIR)/configuration_test.o $(ODIR)/configuration.o
+$(TEST_OUTPUT_DIR)/configuration_test: $(TEST_ODIR)/configuration_test.o $(ODIR)/configuration.o $(ODIR)/logger.o
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) $(TEST_LIBS)
 
-$(TEST_OUTPUT_DIR)/clientSession_test: $(TEST_ODIR)/clientSession_test.o $(ODIR)/clientSession.o
+$(TEST_OUTPUT_DIR)/clientSession_test: $(TEST_ODIR)/clientSession_test.o $(ODIR)/clientSession.o $(ODIR)/logger.o 
 	mkdir -p $(TEST_OUTPUT_DIR)
 	$(CC) -o $@ $^ $(CFLAGS) -Wl,--wrap=recv,--wrap=close,--wrap=send,--wrap=parseStringToCommand,--wrap=executeCommand $(TEST_LIBS)
 
