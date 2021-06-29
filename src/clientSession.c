@@ -10,6 +10,8 @@
 #include <sys/sem.h>
 #include <stdio.h>
 #include <signal.h>
+
+#include "logger.h"
 #include "../include/utils.h"
 #include "../include/applicationLayer.h"
 
@@ -43,8 +45,10 @@ int handleClient(const int socketfd) {
         if(isBiggerThanBuffer(numBytesRead)) {
             char dest_string[27];
             sprintf(dest_string, "> %s%s\n", ERROR_PREFIX, "message too long");
+            warn("received message to long");
             send(socketfd, dest_string, 24, 0);
         } else if(numBytesRead < 0) {
+            warn("recv had error code %d", numBytesRead);
             cleanUp();
             return ANY_SOCKET_EXCEPTION;
         } else if(isNotEmpty(numBytesRead)) {
@@ -76,7 +80,9 @@ int handleMessage(const int socketfd, char readBuffer[]) {
     Command command = parseStringToCommand(readBuffer);
     Result result = {.value = NULL};
     if(strcmp(command.order, "QUIT") == 0) {
-        printf("INFO: closing client session %d\n", socketfd);
+        executeCommand((Command) {.order="END"});
+
+        debug("closing client session %d", socketfd);
         return close(socketfd) < 0 ? ANY_SOCKET_EXCEPTION : -1;
     }
     char* answerToClient = NULL;
@@ -86,7 +92,7 @@ int handleMessage(const int socketfd, char readBuffer[]) {
         sprintf(subscriptions, "%s%s$%d#", subscriptions, command.key, receiverPid);
         answerToClient = (char *) malloc(strlen(command.key) + 8);
         sprintf(answerToClient, "> SUB:%s\n", command.key);
-        printf("DEBUG: %s\n", subscriptions);
+        debug(subscriptions);
         semop(semId, &up, 1); // Enter critical are
         goto send;
     }

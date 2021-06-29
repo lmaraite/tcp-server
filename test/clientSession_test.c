@@ -12,6 +12,12 @@
 #include "utils.h"
 #include "applicationLayer.h"
 #include "clientSession.h"
+#include "configuration.h"
+#include "logger.h"
+
+Configuration config = {
+    .LOGGING_LEVEL=OFF
+};
 
 ssize_t __wrap_recv(int fildes, void *buf, size_t nbyte, int flags) {
     check_expected(fildes);
@@ -47,8 +53,11 @@ Result __wrap_executeCommand(Command command) {
 
 static void initQuitMock(int expectedFileDescriptor) {
     char expectedCommandAsString[] = "QUIT";
-    Command expectedCommand;
-    strcpy(expectedCommand.order, expectedCommandAsString);
+    Command expectedCommand = {
+        .order = "QUIT",
+        .key="",
+        .value=""
+    };
     
     expect_value(__wrap_recv, fildes, expectedFileDescriptor);
     expect_value(__wrap_recv, nbyte, STRING_LENGTH*3 +1);
@@ -57,6 +66,11 @@ static void initQuitMock(int expectedFileDescriptor) {
 
     expect_string(__wrap_parseStringToCommand, commandAsString, expectedCommandAsString);
     will_return(__wrap_parseStringToCommand, &expectedCommand);
+
+    Result any_result = {.error_code=0};
+    expect_any(__wrap_executeCommand, &command);
+    will_return(__wrap_executeCommand, &any_result);
+
 
     expect_value(__wrap_close, fd, expectedFileDescriptor);
     will_return(__wrap_close, 0);
@@ -240,7 +254,10 @@ static void testHandleClientShouldReturnANY_SOCKET_EXCEPTIONWhenCloseReturnedErr
     will_return(__wrap_recv, 5);
 
     expect_string(__wrap_parseStringToCommand, commandAsString, expectedCommandAsString);
-    will_return(__wrap_parseStringToCommand, &expectedCommand);
+    will_return_count(__wrap_parseStringToCommand, &expectedCommand, 1);
+
+    expect_any(__wrap_executeCommand, &command);
+    will_return(__wrap_executeCommand, &(Result) {});
 
     expect_value(__wrap_close, fd, expectedFileDescriptor);
     will_return(__wrap_close, -1);

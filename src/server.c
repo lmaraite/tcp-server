@@ -42,7 +42,7 @@ void runServer() {
     int clientAddress_len = sizeof(clientAddress);
 
     listen(serverSocket, maxClients);
-    printf("INFO: server running on port: %d\n", socketPort);
+    info("server running on port: %d", socketPort);
 
     //Init subscription list no critical area because at this point this is the only process
     int shmId = shmget(SUBSCRIPTION_SHM_KEY, BUFSIZ, IPC_CREAT | 0644);
@@ -62,10 +62,10 @@ void runServer() {
                               &clientAddress_len);
         if (fork() == 0) {
             char *connected = "\nWelcome to the key value storage.\n";
-            printf("INFO: client connected\n");
+            info("client connected on socket %d", clientSocket);
             send(clientSocket, connected, strlen(connected), 0);
             int errorCode = handleClient(clientSocket);
-            printf("INFO: closed socket with error code: %d\n", errorCode);
+            info("closed socket %d with error code: %d", clientSocket, errorCode);
             break;
         } else {
             close(clientSocket);

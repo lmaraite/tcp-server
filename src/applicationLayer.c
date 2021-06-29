@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <fcntl.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
@@ -9,9 +12,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
 #include "../include/utils.h"
 #include "../include/datenhaltung.h"
 #include "../include/applicationLayer.h"
+#include "logger.h"
 
 void notifyAll(char *key, char *message);
 enum Position {keyPos, pidPos};
@@ -36,6 +41,7 @@ Result del(char *key) {
     return result;
 }
 
+
 Result op(char *systemCall, char *key) {
     Result result;
     result.error_code = op_and_save(systemCall, key);
@@ -43,9 +49,131 @@ Result op(char *systemCall, char *key) {
 }
 
 Result executeCommand(Command command) {
+
+int beg(){
+    sem_t *exclusiveSem;
+    exclusiveSem = sem_open("tcpServer-exclusiveSem", O_CREAT, 0644, 1);
+    sem_wait(exclusiveSem);
+
+    FILE *exclusiveFile;
+
+    exclusiveFile = fopen(".exclusive","r");
+
+    if(exclusiveFile != NULL){
+        int returnValue;
+        int pid = getpid();
+        int exclusiveID;
+
+        fscanf(exclusiveFile,"%i",&exclusiveID);
+
+        if (exclusiveID == pid){
+            returnValue = 1003;
+        }
+        else {
+            returnValue = 1002;
+        }
+
+        fclose(exclusiveFile);
+        sem_post(exclusiveSem);
+        return returnValue;
+    }
+
+    exclusiveFile = fopen(".exclusive","w");
+
+    fprintf(exclusiveFile, "%d", getpid());
+    fclose(exclusiveFile);
+    sem_post(exclusiveSem);
+
+    return 0;
+}
+
+int end (){
+    sem_t *exclusiveSem;
+    exclusiveSem = sem_open("tcpServer-exclusiveSem", O_CREAT, 0644, 1);
+    sem_wait(exclusiveSem);
+
+    FILE *exclusiveFile;
+    exclusiveFile = fopen(".exclusive","r");
+
+    if(exclusiveFile == NULL){
+        sem_post(exclusiveSem);
+        return 1002;
+    }
+    fclose(exclusiveFile);
+
+    remove(".exclusive");
+    sem_post(exclusiveSem);
+    return 0;
+}
+
+int checkExclusive(){
+  int pid = getpid();
+  int exclusiveID;
+  FILE *exclusiveFile;
+  exclusiveFile = fopen(".exclusive", "r");
+
+  if(exclusiveFile == NULL){
+       return 0;
+  }
+
+  fscanf(exclusiveFile,"%i",&exclusiveID);
+
+  if (exclusiveID == pid){
+    return 0;
+  }
+
+  return 1;
+}
+
+Result executeCommand( Command command){
+
     Result result;
     char *formatedValue;
-    if (strcmp(command.order, "PUT") == 0) {
+
+    int hasPermission = checkExclusive();
+    if (hasPermission==1) {
+        result.error_code = 1;
+        result.value = calloc(sizeof(char), 34);
+        strcpy(result.value, "Another user has exclusive access");
+        return result;
+    }
+    debug("executing command %s", command.order);
+    if(strcmp(command.order, "BEG")==0){
+      int exclusiveStatus = beg();
+      if(exclusiveStatus==0){
+          result.value = calloc(sizeof(char), 30);
+          strcpy(result.value, "You now have exclusive access");
+      }
+      else if(exclusiveStatus==1002){
+          result.value = calloc(sizeof(char), 34);
+          strcpy(result.value, "You already have exclusive access");
+      }
+      else if(exclusiveStatus==1003){
+          result.error_code = 1;
+          result.value = calloc(sizeof(char), 34);
+          strcpy(result.value, "Another user has exclusive access");
+          return result;
+      }
+      result.error_code = 0;
+      return result;
+    }
+
+    if(strcmp(command.order, "END")==0){
+      int exclusiveStatus = end();
+      if(exclusiveStatus==0){
+        result.value = calloc(sizeof(char), 34);
+        strcpy(result.value, "You gave up your exclusive access");
+        result.error_code = 0;
+      }
+      else if(exclusiveStatus==1002){
+          result.value = calloc(sizeof(char), 28);
+          strcpy(result.value, "Nobody has exclusive access");
+      }
+      result.error_code = 0;
+      return result;
+    }
+
+    if(strcmp(command.order, "PUT")==0){
         result = put(command.key, command.value);
         formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
         sprintf(formatedValue, "%s:%s:%s", "PUT", command.key, command.value);
@@ -58,8 +186,8 @@ Result executeCommand(Command command) {
         } else {
             formatedValue = malloc(sizeof(command.key) + sizeof(command.value) + (sizeof(char) * 6));
             sprintf(formatedValue, "%s:%s:%s", "GET", command.key, result.value);
+            free(result.value);
         }
-        free(result.value);
         result.value = formatedValue;
     } else if (strcmp(command.order, "DEL") == 0) {
         result = del(command.key);
@@ -85,7 +213,9 @@ Result executeCommand(Command command) {
     if (result.error_code == 0) {
         char *message = (char *) malloc(strlen(result.value) + strlen(command.key) + 4);
         sprintf(message, "> %s\n", result.value);
-        notifyAll(command.key, message);
+        if (strcmp(command.order, "GET") != 0) {
+            notifyAll(command.key, message);
+        }
     }
     return result;
 }
@@ -115,6 +245,7 @@ void notifyAll(char *key, char *message) {
     enum Position position = keyPos;
     while (subscriptions[i] != '\0') {
         char c = subscriptions[i];
+
         if (c == '#') {
             if (strcmp(key, currentKey) == 0) {
                 msg.type = atoi(pid);
@@ -138,6 +269,7 @@ void notifyAll(char *key, char *message) {
     }
     semop(semId, &up, 1); // Leave critical area
 }
+
 
 int op_and_save(char *systemCall, char *key) {
     char *sysCalls[] = {"date", "who", "uptime"};
