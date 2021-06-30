@@ -283,10 +283,10 @@ int op_and_save(char *systemCall, char *key) {
 
         for (int i = 0; i < sysCallsLength; i++) {
             if (strcmp(systemCall, sysCalls[i]) == 0) {
-                execlp(systemCall, systemCall, 0);
+                execlp(systemCall, systemCall, NULL);
             }
         }
-        execlp("echo", "echo", "command not found", 0);
+        execlp("echo", "echo", "command not found", NULL);
         return 1;
     } else {
         wait(0);
