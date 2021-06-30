@@ -96,6 +96,10 @@ Result find_by_key(char* key){
 
 int save(char* key, char* value){
      debug("save key %s with value %s", key, value);
+     if(strcmp(key, "") == 0) {
+        debug("cannot save empty key");
+        return 1001;
+     }
      if(!databaseCreated) {
          int c_return = createDatabase();
          if(c_return != 0) {
@@ -115,8 +119,14 @@ int save(char* key, char* value){
 	  sem_wait(fileSem);
 
 	  keyFile = fopen(keyPath,"w");
-	  free(keyPath);
+      free(keyPath);
 
+    if(keyFile == NULL) {
+        debug("file %s could not be opened", keyFile);
+        sem_post(fileSem);
+        free(fileSemName);
+        return 1001;
+    }
     fprintf(keyFile, "%s", value);
     fclose(keyFile);
 

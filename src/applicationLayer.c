@@ -45,6 +45,13 @@ Result del(char *key) {
 Result op(char *systemCall, char *key) {
     Result result;
     result.error_code = op_and_save(systemCall, key);
+    if(result.error_code == 0) {
+        result.value = malloc(sizeof(char) * 15);
+        strcpy(result.value, "exec successful");
+    } else {
+        result.value = malloc(sizeof(char) * 20);
+        strcpy(result.value, "exec not successful");
+    }
     return result;
 }
 
@@ -201,9 +208,6 @@ Result executeCommand( Command command){
         result.value = formatedValue;
     } else if (strcmp(command.order, "OP") == 0) {
         result = op(command.key, command.value);
-        formatedValue = malloc(sizeof(char) * 15);
-        sprintf(formatedValue, "%s", "exec successful");
-        result.value = formatedValue;
     }
     else {
         result.error_code = 1;
@@ -276,6 +280,7 @@ int op_and_save(char *systemCall, char *key) {
     int sysCallsLength = 3;
     int fd[2];
     pipe(fd);
+    int return_value;
 
     if (fork() == 0) {
         dup2(fd[1], 1);
@@ -291,10 +296,10 @@ int op_and_save(char *systemCall, char *key) {
     } else {
         wait(0);
         dup2(fd[0], 0);
-        save(key, readString(stdin));
+        return_value = save(key, readString(stdin));
         close(fd[0]);
         close(fd[1]);
     }
-    return 0;
+    return return_value;
 }
 
