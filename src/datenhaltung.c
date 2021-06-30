@@ -60,6 +60,7 @@ int createDatabase() {
 //-----------------------------
 
 Result find_by_key(char* key){
+    debug("find by key %s", key);
 	sem_t *fileSem;
 	char *fileSemName = concatenate(semPrefix,key);
 	fileSem = sem_open(fileSemName, O_CREAT, 0644, 1);
@@ -73,6 +74,7 @@ Result find_by_key(char* key){
 
 	Result result;
 	if(keyFile == NULL){
+        debug("no entry found for key %s", key);
 		result.error_code = 1002;
 		sem_post(fileSem);
 		return result;
@@ -88,14 +90,20 @@ Result find_by_key(char* key){
 
 	result.value = value;
 	result.error_code = 0;
-
+    debug("found value %s for key %s", result.value, key);
 	return result;
 }
 
 int save(char* key, char* value){
+     debug("save key %s with value %s", key, value);
+     if(strcmp(key, "") == 0) {
+        debug("cannot save empty key");
+        return 1001;
+     }
      if(!databaseCreated) {
          int c_return = createDatabase();
          if(c_return != 0) {
+             error("could not create database");
              return c_return + 1000;
          }
          databaseCreated = 1;
@@ -111,18 +119,26 @@ int save(char* key, char* value){
 	  sem_wait(fileSem);
 
 	  keyFile = fopen(keyPath,"w");
-	  free(keyPath);
+      free(keyPath);
 
+    if(keyFile == NULL) {
+        debug("file %s could not be opened", keyFile);
+        sem_post(fileSem);
+        free(fileSemName);
+        return 1001;
+    }
     fprintf(keyFile, "%s", value);
     fclose(keyFile);
 
     sem_post(fileSem);
     free(fileSemName);
+    debug("saved key %s with value %s", key, value);
 
     return 0;
 }
 
 int delete_by_key(char* key){
+    debug("delete key %s", key);
 	sem_t *fileSem;
 	char *fileSemName = concatenate(semPrefix,key);
 	fileSem = sem_open(fileSemName, O_CREAT, 0644, 1);
@@ -134,6 +150,7 @@ int delete_by_key(char* key){
 	keyFile = fopen(keyPath,"r");
 
 	if(keyFile == NULL){
+        debug("no entry found for key %s", key);
 		sem_post(fileSem);
 		return 1002;
 	}
@@ -141,6 +158,7 @@ int delete_by_key(char* key){
 
 	remove(keyPath);
 	free(keyPath);
+    debug("entry for key %s deleted", key);
 
 	sem_post(fileSem);
 	sem_unlink(fileSemName);

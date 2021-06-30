@@ -5,6 +5,7 @@
 
 #include "../include/configuration.h"
 #include "../modules/cmocka/include/cmocka.h"
+#include "logger.h"
 
 static void resetConfig() {
     strcpy(config.PATH, "./data");
@@ -18,6 +19,7 @@ void configuration_basic_test(void **state) {
     assert_int_equal(config.PORT, 1234);
     assert_string_equal(config.PATH, "./database/");
     assert_int_equal(config.MAX_SESSIONS, 10);
+    assert_int_equal(config.LOGGING_LEVEL, WARN);
 }
 
 void configuration_append_slash_to_path_test(void **state) {

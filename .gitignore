@@ -9,5 +9,5 @@ tcpServer
 *.swp
 
 config
-storage/
+database/
 .exclusive

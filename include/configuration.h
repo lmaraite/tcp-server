@@ -3,10 +3,13 @@
 
 #include <limits.h>
 
+#include "logger.h"
+
  typedef struct {
     int PORT;
     char PATH[PATH_MAX];
     int MAX_SESSIONS;
+    LoggingLevel LOGGING_LEVEL;
 } Configuration ;
 
 extern Configuration config;
